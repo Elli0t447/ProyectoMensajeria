@@ -90,7 +90,7 @@ public class LoginUI extends JFrame {
 		 try 
 		 {
 			 // Definir icono del ejecutable
-		     ImageIcon programIcon = new ImageIcon(LoginUI.class.getResource("/img/logo.png"));
+		     ImageIcon programIcon = new ImageIcon(LoginUI.class.getResource("/img/app.png"));
 		     setIconImage(programIcon.getImage());
 		  }
 		  catch (Exception whoJackedMyIcon) 
@@ -198,5 +198,18 @@ public class LoginUI extends JFrame {
 		panel_1.setBounds(0, 0, 381, 157);
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
+		
+		JLabel imagen = new JLabel("");
+		imagen.setBounds(232, 10, 32, 39);
+		panel_1.add(imagen);
+		imagen.setIcon(new ImageIcon(LoginUI.class.getResource("/img/chat.png")));
+		
+		JLabel lblNewLabel = new JLabel("Mensajeria");
+		lblNewLabel.setForeground(Color.WHITE);
+		lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		lblNewLabel.setBounds(135, 38, 101, 19);
+		panel_1.add(lblNewLabel);
+		
+		
 	}
 }

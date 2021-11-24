@@ -8,6 +8,8 @@ public class LoginUsuario
 	private Connection cn;
 	
 	public String getUsuario() { return usuario; }
+	public String getContraseña() { return contraseña; }
+	public Connection getConexion() { return cn; }
 	
 	public LoginUsuario(String user, String pass)
 	{
