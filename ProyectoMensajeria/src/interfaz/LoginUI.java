@@ -1,6 +1,5 @@
 package interfaz;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -12,13 +11,9 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.border.MatteBorder;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.SoftBevelBorder;
 
 import aplicacion.LoginUsuario;
 
-import javax.swing.border.LineBorder;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -83,10 +78,8 @@ public class LoginUI extends JFrame {
 	 * Create the frame.
 	 */
 	public LoginUI() 
-	{
-		
-		
-		setResizable(false);
+	{	
+		 setResizable(false);
 		 try 
 		 {
 			 // Definir icono del ejecutable
@@ -120,6 +113,12 @@ public class LoginUI extends JFrame {
 		userLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		
 		usuarioLogin = new JTextField();
+		usuarioLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				loginAction();
+			}
+		});
 		usuarioLogin.setForeground(new Color(128, 128, 128));
 		usuarioLogin.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(65, 105, 225)));
 		usuarioLogin.setToolTipText("Introduce tu usuario");

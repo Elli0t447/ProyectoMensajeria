@@ -5,10 +5,12 @@ import java.sql.*;
 public class LoginUsuario 
 {
 	private String usuario, contraseña;
+	private int id;
 	private Connection cn;
 	
 	public String getUsuario() { return usuario; }
 	public String getContraseña() { return contraseña; }
+	public int getIdUsuario() { return id; }
 	public Connection getConexion() { return cn; }
 	
 	public LoginUsuario(String user, String pass)
@@ -27,7 +29,8 @@ public class LoginUsuario
 			while (rs.next())
 			{
 				String user = rs.getString("nombre");
-				String pass = rs.getString("contra");
+				String pass = rs.getString("contra");				
+				id = rs.getInt("id_usuario");
 				
 				if (user.equals(usuario) && pass.equals(contraseña))
 				{
@@ -46,6 +49,30 @@ public class LoginUsuario
 		}
 		return false;
 		
+	}
+	
+	public String nombreUserPorId(int id_u)
+	{
+	    ResultSet rs = null;
+	    String nombreResult = null;
+	    try 
+	    {
+	        PreparedStatement pst = cn.prepareStatement("SELECT * FROM usuario WHERE id_usuario = ?");
+	        pst.setInt(1, id_u);
+	        rs = pst.executeQuery();
+	        
+	        while (rs.next())
+	        {
+	        	 nombreResult = rs.getString("nombre");        	
+	        }
+	        
+	    } 
+	    catch (SQLException ex) 
+	    {
+	        System.out.println("Error al seleccionar datos");
+	    }
+	    
+		return nombreResult;
 	}
 	
 	private ResultSet usuarioRegistrado()
