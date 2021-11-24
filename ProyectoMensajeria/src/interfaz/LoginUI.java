@@ -90,7 +90,7 @@ public class LoginUI extends JFrame {
 		 try 
 		 {
 			 // Definir icono del ejecutable
-		     ImageIcon programIcon = new ImageIcon(LoginUI.class.getResource("/img/app.png"));
+		     ImageIcon programIcon = new ImageIcon(LoginUI.class.getResource("/img/chat.png"));
 		     setIconImage(programIcon.getImage());
 		  }
 		  catch (Exception whoJackedMyIcon) 
@@ -134,6 +134,12 @@ public class LoginUI extends JFrame {
 		panel.add(passLabel);
 		
 		passwordLogin = new JPasswordField();
+		passwordLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				loginAction();
+			}
+		});
 		passwordLogin.setForeground(new Color(128, 128, 128));
 		passwordLogin.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(65, 105, 225)));
 		passwordLogin.setToolTipText("Introduce tu contrase\u00F1a");
@@ -147,18 +153,7 @@ public class LoginUI extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				 String passwordFormated = new String(passwordLogin.getPassword());
-			     login = new LoginUsuario(usuarioLogin.getText(), passwordFormated);
-			     if (login.comprobarUser())
-			     {
-			    	 dispose();
-			    	 new PrincipalUI().setVisible(true);
-					 System.out.println("Log in correcto!");
-			     }
-			     else
-			     {
-			    	 JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
-			     }
+				 loginAction();
 			}
 		});
 		btnNewButton.setBorderPainted(false);
@@ -195,7 +190,7 @@ public class LoginUI extends JFrame {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(new Color(65, 105, 225));
-		panel_1.setBounds(0, 0, 381, 157);
+		panel_1.setBounds(0, 0, 384, 157);
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
@@ -211,5 +206,21 @@ public class LoginUI extends JFrame {
 		panel_1.add(lblNewLabel);
 		
 		
+	}
+	
+	private void loginAction()
+	{
+		String passwordFormated = new String(passwordLogin.getPassword());
+	     login = new LoginUsuario(usuarioLogin.getText(), passwordFormated);
+	     if (login.comprobarUser())
+	     {
+	    	 dispose();
+	    	 new PrincipalUI().setVisible(true);
+			 System.out.println("Log in correcto!");
+	     }
+	     else
+	     {
+	    	 JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
+	     }
 	}
 }

@@ -1,12 +1,15 @@
 package aplicacion;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.sql.*;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.AttributeSet.FontAttribute;
 
 public class ChatsUsuario 
 {
@@ -40,22 +43,42 @@ public class ChatsUsuario
 			
 			for (int i = 0; i < countChats; i++)
 			{
-				JPanel panelChat = new JPanel();
-				panelChat.setBounds(10, 0, 0, 0);
-				panelChat.setBackground(new Color(255, 245, 245));
-				panelChat.setBorder(new EmptyBorder(1, 1, 1, 1));
-				panelChat.setLayout(null);
-				padre.add(panelChat);
 				
+				int pos = 20;
+				int incremento = 20;
 				
-				JLabel nombreChat = new JLabel("Chat");
-				panelChat.add(nombreChat);
-				
-				JLabel descripcionChat = new JLabel("Descripcion");
-				panelChat.add(descripcionChat);
-				
-				padre.revalidate();
+				for (int j = 0; j < countChats; j++ )
+				{			
+					JPanel panelChat = new JPanel();				
+					panelChat.setBackground(new Color(255, 255, 255));
+					panelChat.setBounds(10, incremento, 146, 52);
+					panelChat.setBorder(new EmptyBorder(10, 10, 10, 10));
+					panelChat.setLayout(null);
+					padre.add(panelChat);
+					
+					pos = incremento;
+					incremento = pos + 60;	
+					
+					JButton nombreChat = new JButton("Nombre chat");
+					nombreChat.setBounds(-5,0,151,35);
+					nombreChat.setBackground(new Color(255, 255, 255));
+					nombreChat.setBorderPainted(false);
+					nombreChat.setHorizontalAlignment(SwingConstants.LEFT);
+					nombreChat.setContentAreaFilled(true);
+					nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 13));
+					panelChat.add(nombreChat);
+					
+					
+					JLabel descripcionChat = new JLabel("Descripcion");
+					descripcionChat.setBounds(10,30,146,20);
+					descripcionChat.setForeground(Color.GRAY);
+					descripcionChat.setFont(new Font("Segoe UI", Font.PLAIN, 9));
+					panelChat.add(descripcionChat);
+				}
+		
 			}
+
+			padre.revalidate();
 			
 			if (countChats > 0)
 			{

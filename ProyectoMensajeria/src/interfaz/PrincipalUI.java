@@ -36,6 +36,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 import javax.swing.SwingConstants;
+import javax.swing.BoxLayout;
 
 public class PrincipalUI extends JFrame 
 {
@@ -62,7 +63,7 @@ public class PrincipalUI extends JFrame
 		try 
 		{
 			 // Definir icono del ejecutable
-		     ImageIcon programIcon = new ImageIcon(PrincipalUI.class.getResource("/img/app.png"));
+		     ImageIcon programIcon = new ImageIcon(PrincipalUI.class.getResource("/img/chat.png"));
 		     setIconImage(programIcon.getImage());
 		 }
 		 catch (Exception whoJackedMyIcon) 
@@ -71,7 +72,7 @@ public class PrincipalUI extends JFrame
 		 }
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 672, 460);
+		setBounds(100, 100, 860, 517);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -81,44 +82,45 @@ public class PrincipalUI extends JFrame
 		JPanel toolbar = new JPanel();
 		toolbar.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(227, 227, 227)));
 		toolbar.setBackground(new Color(255, 250, 250));
-		toolbar.setBounds(0, 0, 210, 438);
+		toolbar.setBounds(0, 0, 236, 489);
 		contentPane.add(toolbar);
 		toolbar.setLayout(null);
 		
 		tab_noChat = new JPanel();
+		
 		tab_noChat.setBackground(Color.WHITE);
-		tab_noChat.setBounds(204, 0, 464, 438);
+		tab_noChat.setBounds(233, 0, 623, 489);
 		contentPane.add(tab_noChat);
 		tab_noChat.setLayout(null);
 		
 		JLabel mensajeriaTitle = new JLabel("App Mensajer\u00EDa");
 		mensajeriaTitle.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
 		mensajeriaTitle.setFont(new Font("Segoe UI", Font.BOLD, 25));
-		mensajeriaTitle.setBounds(126, 245, 192, 66);
+		mensajeriaTitle.setBounds(217, 247, 192, 66);
 		tab_noChat.add(mensajeriaTitle);
 		
 		JLabel mensajeriaSubtitle = new JLabel("Chatea con tus amigos");
 		mensajeriaSubtitle.setHorizontalAlignment(SwingConstants.CENTER);
 		mensajeriaSubtitle.setForeground(Color.GRAY);
 		mensajeriaSubtitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		mensajeriaSubtitle.setBounds(132, 321, 182, 46);
+		mensajeriaSubtitle.setBounds(223, 323, 182, 46);
 		tab_noChat.add(mensajeriaSubtitle);
 		
 		JLabel icon = new JLabel("");
 		icon.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/app.png")));
-		icon.setBounds(133, 128, 128, 128);
+		icon.setBounds(224, 130, 128, 128);
 		tab_noChat.add(icon);
 		
 		tab_chat = new JPanel();
 		tab_chat.setVisible(false);
 		tab_chat.setBorder(new MatteBorder(0, 0, 1, 0, (Color) new Color(227, 227, 227)));
 		tab_chat.setBackground(Color.WHITE);
-		tab_chat.setBounds(204, 0, 467, 437);
+		tab_chat.setBounds(233, 0, 623, 489);
 		contentPane.add(tab_chat);
 		tab_chat.setLayout(null);
 		
 		escribirTexto = new JTextField();
-		escribirTexto.setBounds(18, 392, 438, 34);
+		escribirTexto.setBounds(12, 430, 602, 34);
 		tab_chat.add(escribirTexto);
 		escribirTexto.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(65, 105, 225)));
 		escribirTexto.setForeground(new Color(128, 128, 128));
@@ -127,7 +129,7 @@ public class PrincipalUI extends JFrame
 		
 		JPanel azul = new JPanel();
 		azul.setBackground(new Color(65, 105, 225));
-		azul.setBounds(0, 0, 65, 438);
+		azul.setBounds(0, 0, 65, 489);
 		toolbar.add(azul);
 		azul.setLayout(null);
 		
@@ -142,28 +144,28 @@ public class PrincipalUI extends JFrame
 		});
 		salir.setBorderPainted(false);
 		salir.setContentAreaFilled(false);
-		salir.setBounds(13, 379, 45, 43);
+		salir.setBounds(13, 425, 45, 43);
 		azul.add(salir);
 		
 		chatContainer = new JPanel();
 		chatContainer.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(227, 227, 227)));
 		chatContainer.setBackground(new Color(255, 250, 250));
-		chatContainer.setBounds(66, 0, 144, 438);
+		chatContainer.setBounds(66, 0, 169, 489);
 		toolbar.add(chatContainer);
 		chatContainer.setLayout(null);
 		
 		container = new JPanel();
 		container.setVisible(false);
-		container.setBackground(Color.WHITE);
-		container.setBounds(0, 0, 144, 438);
+		container.setBackground(new Color(255, 250, 250));
+		container.setBounds(0, 0, 166, 489);
 		chatContainer.add(container);
-		container.setLayout(new GridLayout(0, 1, 0, 0));
+		container.setLayout(null);
 		
 		nochatLabel = new JLabel("No tienes ningun chat :(");
 		nochatLabel.setBorder(new MatteBorder(0, 0, 2, 0, (Color) new Color(65, 105, 225)));
-		nochatLabel.setBounds(10, 10, 124, 34);
+		nochatLabel.setBounds(10, 10, 149, 34);
 		chatContainer.add(nochatLabel);
-		nochatLabel.setFont(new Font("Segoe UI", Font.BOLD, 10));
+		nochatLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		
 		noChatDesc = new JLabel("<html>Añade a un usuario como amigo o crea un grupo para empezar a conversar </html>");
 		noChatDesc.setVerticalAlignment(SwingConstants.TOP);
@@ -193,7 +195,7 @@ public class PrincipalUI extends JFrame
 		ajustes.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/ajustes.png")));
 		ajustes.setContentAreaFilled(false);
 		ajustes.setBorderPainted(false);
-		ajustes.setBounds(14, 324, 33, 43);
+		ajustes.setBounds(15, 373, 33, 43);
 		azul.add(ajustes);
 		
 		
@@ -203,12 +205,12 @@ public class PrincipalUI extends JFrame
 		JLabel nombreChat = new JLabel("id_chat / nombrechat");
 		nombreChat.setForeground(new Color(255, 255, 255));
 		nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		nombreChat.setBounds(10, 5, 239, 33);
+		nombreChat.setBounds(10, 5, 351, 33);
 		tab_chat.add(nombreChat);
 		
 		JPanel blueBar = new JPanel();
 		blueBar.setBackground(new Color(65, 105, 225));
-		blueBar.setBounds(0, 0, 466, 37);
+		blueBar.setBounds(0, 0, 652, 37);
 		tab_chat.add(blueBar);
 		
 		init();
@@ -220,8 +222,6 @@ public class PrincipalUI extends JFrame
 		chats = new ChatsUsuario(LoginUI.login);
 		if (chats.mostrarChats(container))
 		{
-			tab_noChat.setVisible(false);
-			tab_chat.setVisible(true);
 			container.setVisible(true);
 		}	
 	}
