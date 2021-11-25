@@ -1,7 +1,9 @@
 package aplicacion;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Point;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,24 +11,25 @@ import java.sql.SQLException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.MatteBorder;
 
 import interfaz.PrincipalUI;
 
 public class MensajesChat 
 {
-	public void cargarChat(int id_c, JLabel label, String titulo, JPanel parent)
+	private static int positionUI;
+	
+	public static int getPositionUI() { return positionUI; }
+	
+	public void cargarChat(int id_c, JPanel parent)
 	{
 		PrincipalUI.tab_noChat.setVisible(false);
-		PrincipalUI.tab_chat.setVisible(true);
-		label.setText(titulo);		
+		PrincipalUI.tab_chat.setVisible(true);	
 		
 		ResultSet rs = mensajesUserEnChat(id_c);
 		
 		try 
 		{
-			int positionUI = 10;
+			positionUI = 10;
 			int incremento = 54;
 			
 			while (rs.next())
@@ -54,11 +57,12 @@ public class MensajesChat
 				JLabel textoMensaje = new JLabel(mensaje);
 				textoMensaje.setForeground(Color.DARK_GRAY);
 				textoMensaje.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-				textoMensaje.setBounds(7, 26, 570, 13);
+				textoMensaje.setBounds(12, 26, 570, 13);
 				msjPanel.add(textoMensaje);
 			}
 			
-			
+			PrincipalUI.scrollMensaje.getViewport().setViewPosition(new Point(1, MensajesChat.getPositionUI()));
+			parent.setPreferredSize(new Dimension(560, positionUI));
 			parent.revalidate();
 			parent.repaint();
 			

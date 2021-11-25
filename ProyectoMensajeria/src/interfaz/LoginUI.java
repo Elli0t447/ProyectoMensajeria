@@ -78,7 +78,6 @@ public class LoginUI extends JFrame {
 	 */
 	public LoginUI() 
 	{
-		setAutoRequestFocus(false);
 		setResizable(false);
 		 try 
 		 {

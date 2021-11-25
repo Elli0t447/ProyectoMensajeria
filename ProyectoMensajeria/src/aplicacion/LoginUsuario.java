@@ -5,12 +5,12 @@ import java.sql.*;
 public class LoginUsuario 
 {
 	private String usuario, contraseña;
-	private int id;
+	private static int id;
 	private static Connection cn;
 	
 	public String getUsuario() { return usuario; }
 	public String getContraseña() { return contraseña; }
-	public int getIdUsuario() { return id; }
+	public static int getIdUsuario() { return id; }
 	public static Connection getConexion() { return cn; }
 	
 	public LoginUsuario(String user, String pass)
