@@ -11,7 +11,7 @@ public class LoginUsuario
 	public String getUsuario() { return usuario; }
 	public String getContraseña() { return contraseña; }
 	public int getIdUsuario() { return id; }
-	public Connection getConexion() { return cn; }
+	public static Connection getConexion() { return cn; }
 	
 	public LoginUsuario(String user, String pass)
 	{

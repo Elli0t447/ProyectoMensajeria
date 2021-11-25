@@ -9,8 +9,11 @@ import java.sql.*;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
+
 import interfaz.PrincipalUI;
 
 public class ChatsUsuario 
@@ -83,11 +86,37 @@ public class ChatsUsuario
 						PrincipalUI.descripcionChat.setText("");
 						PrincipalUI.containerMsj.removeAll();
 				
-						mC.cargarChat(idIndividual, PrincipalUI.nombreChat, nomIndividual, PrincipalUI.containerMsj);										
+						mC.cargarChat(idIndividual, PrincipalUI.nombreChat, nomIndividual, PrincipalUI.containerMsj);	
+						
+						JTextField escribirTexto = new JTextField();
+						escribirTexto.setBounds(12, 430, 602, 34);
+						PrincipalUI.tab_chat.add(escribirTexto);
+						escribirTexto.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(65, 105, 225)));
+						escribirTexto.setForeground(new Color(128, 128, 128));
+						escribirTexto.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+						escribirTexto.setColumns(10);
+									
+						escribirTexto.addActionListener(new ActionListener() 
+						{
+							public void actionPerformed(ActionEvent e) 
+							{	
+								if (!escribirTexto.getText().equals(""))
+								{
+									int chatEnvio = idIndividual;		
+									mC.enviarMensaje(chatEnvio, login.getIdUsuario(), escribirTexto.getText());
+									mC.cargarChat(chatEnvio, PrincipalUI.nombreChat, nomIndividual, PrincipalUI.containerMsj);	
+									escribirTexto.setText("");
+								}
+								else
+								{
+									System.out.println("Escribe algo aunque sea mamon");
+								}
+							}
+						});
 					}
 				});
 				panelChat.add(nombreChat);
-							
+	
 				countChats++;
 			}
 			
@@ -118,12 +147,38 @@ public class ChatsUsuario
 				nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 13));
 				nombreChat.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) 
-					{					
+					{											
 						MensajesChat mC = new MensajesChat();				
 						PrincipalUI.descripcionChat.setText("");
 						PrincipalUI.containerMsj.removeAll();
 				
 						mC.cargarChat(idIndividual, PrincipalUI.nombreChat, nomIndividual, PrincipalUI.containerMsj);	
+						
+						JTextField escribirTexto = new JTextField();
+						escribirTexto.setBounds(12, 430, 602, 34);
+						PrincipalUI.tab_chat.add(escribirTexto);
+						escribirTexto.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(65, 105, 225)));
+						escribirTexto.setForeground(new Color(128, 128, 128));
+						escribirTexto.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+						escribirTexto.setColumns(10);
+									
+						escribirTexto.addActionListener(new ActionListener() 
+						{
+							public void actionPerformed(ActionEvent e) 
+							{	
+								if (!escribirTexto.getText().equals(""))
+								{
+									int chatEnvio = idIndividual;		
+									mC.enviarMensaje(chatEnvio, login.getIdUsuario(), escribirTexto.getText());
+									mC.cargarChat(chatEnvio, PrincipalUI.nombreChat, nomIndividual, PrincipalUI.containerMsj);	
+									escribirTexto.setText("");
+								}
+								else
+								{
+									System.out.println("Escribe algo aunque sea mamon");
+								}
+							}
+						});
 					}
 				});
 				panelChat.add(nombreChat);	
@@ -133,11 +188,12 @@ public class ChatsUsuario
 				descripcionChat.setForeground(Color.GRAY);
 				descripcionChat.setFont(new Font("Segoe UI", Font.PLAIN, 9));
 				panelChat.add(descripcionChat);
-				
+							
 				countChats++;
 			}
 			
 			padre.revalidate();
+			padre.repaint();
 			
 			if (countChats > 0)
 			{
@@ -155,7 +211,7 @@ public class ChatsUsuario
 	
 	private ResultSet conversUser()
 	{
-		Connection cn = login.getConexion();
+		Connection cn = LoginUsuario.getConexion();
 		int id_usuario = login.getIdUsuario();
 		String consultaSQL = "SELECT usuario.id_usuario, nombre, conversacion.id_chat, id_usu1, id_usu2 FROM usuario INNER JOIN conversacion ON usuario.id_usuario = conversacion.id_usu1 OR usuario.id_usuario = conversacion.id_usu2 WHERE usuario.id_usuario = ?";
 		
@@ -178,7 +234,7 @@ public class ChatsUsuario
 	
 	private ResultSet gruposUser()
 	{
-		Connection cn = login.getConexion();
+		Connection cn = LoginUsuario.getConexion();
 		int id_usuario = login.getIdUsuario();
 		String consultaSQL = "SELECT usuario.id_usuario, participa.id_chat, grupo.nombre, grupo.descripcion FROM usuario INNER JOIN participa USING (id_usuario) INNER JOIN grupo USING (id_chat) WHERE usuario.id_usuario = ?";
 		

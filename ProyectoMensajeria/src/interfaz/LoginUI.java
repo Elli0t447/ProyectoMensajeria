@@ -4,7 +4,6 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -78,8 +77,9 @@ public class LoginUI extends JFrame {
 	 * Create the frame.
 	 */
 	public LoginUI() 
-	{	
-		 setResizable(false);
+	{
+		setAutoRequestFocus(false);
+		setResizable(false);
 		 try 
 		 {
 			 // Definir icono del ejecutable
@@ -96,20 +96,20 @@ public class LoginUI extends JFrame {
 		setBounds(100, 100, 387, 509);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(255, 255, 255));
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBorder(null);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JPanel panel = new JPanel();
-		panel.setBackground(new Color(255, 255, 255));
-		panel.setBounds(55, 76, 269, 337);
-		contentPane.add(panel);
-		panel.setBorder(new MatteBorder(1, 1, 1, 2, (Color) UIManager.getColor("Button.light")));
-		panel.setLayout(null);
+		JPanel form = new JPanel();
+		form.setBounds(55, 76, 269, 337);
+		form.setBackground(new Color(255, 255, 255));
+		contentPane.add(form);
+		form.setBorder(new MatteBorder(1, 1, 1, 2, (Color) UIManager.getColor("Button.light")));
+		form.setLayout(null);
 		
 		JLabel userLabel = new JLabel("Usuario");
 		userLabel.setBounds(24, 24, 66, 21);
-		panel.add(userLabel);
+		form.add(userLabel);
 		userLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		
 		usuarioLogin = new JTextField();
@@ -124,13 +124,13 @@ public class LoginUI extends JFrame {
 		usuarioLogin.setToolTipText("Introduce tu usuario");
 		usuarioLogin.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		usuarioLogin.setBounds(24, 51, 214, 30);
-		panel.add(usuarioLogin);
+		form.add(usuarioLogin);
 		usuarioLogin.setColumns(10);
 		
 		JLabel passLabel = new JLabel("Contrase\u00F1a");
 		passLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		passLabel.setBounds(24, 126, 109, 13);
-		panel.add(passLabel);
+		form.add(passLabel);
 		
 		passwordLogin = new JPasswordField();
 		passwordLogin.addActionListener(new ActionListener() {
@@ -144,7 +144,7 @@ public class LoginUI extends JFrame {
 		passwordLogin.setToolTipText("Introduce tu contrase\u00F1a");
 		passwordLogin.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		passwordLogin.setBounds(24, 149, 214, 30);
-		panel.add(passwordLogin);
+		form.add(passwordLogin);
 		
 		
 		
@@ -160,7 +160,7 @@ public class LoginUI extends JFrame {
 		btnNewButton.setForeground(new Color(255, 255, 255));
 		btnNewButton.setFont(new Font("Segoe UI", Font.BOLD, 20));
 		btnNewButton.setBounds(68, 210, 132, 47);
-		panel.add(btnNewButton);
+		form.add(btnNewButton);
 		
 		
 		
@@ -185,24 +185,25 @@ public class LoginUI extends JFrame {
 		btnNewButton_1.setBackground(new Color(255, 255, 255));
 		btnNewButton_1.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
 		btnNewButton_1.setBounds(91, 291, 91, 21);
-		panel.add(btnNewButton_1);
+		form.add(btnNewButton_1);
 		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(new Color(65, 105, 225));
-		panel_1.setBounds(0, 0, 384, 157);
-		contentPane.add(panel_1);
-		panel_1.setLayout(null);
+		JPanel bg = new JPanel();
+		bg.setBounds(0, 0, 383, 157);
+		bg.setBorder(null);
+		bg.setBackground(new Color(65, 105, 225));
+		contentPane.add(bg);
+		bg.setLayout(null);
 		
 		JLabel imagen = new JLabel("");
 		imagen.setBounds(232, 10, 32, 39);
-		panel_1.add(imagen);
+		bg.add(imagen);
 		imagen.setIcon(new ImageIcon(LoginUI.class.getResource("/img/chat.png")));
 		
 		JLabel lblNewLabel = new JLabel("Mensajeria");
+		lblNewLabel.setBounds(135, 38, 101, 19);
 		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		lblNewLabel.setBounds(135, 38, 101, 19);
-		panel_1.add(lblNewLabel);
+		bg.add(lblNewLabel);
 		
 		
 	}

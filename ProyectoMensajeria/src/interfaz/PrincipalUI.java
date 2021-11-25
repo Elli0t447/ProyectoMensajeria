@@ -13,7 +13,6 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 
 import aplicacion.ChatsUsuario;
@@ -24,8 +23,7 @@ public class PrincipalUI extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField escribirTexto;
-	private ChatsUsuario chats;
+	private ChatsUsuario chatsU;
 	
 	public static JPanel tab_chat;
 	public static JPanel tab_noChat;
@@ -80,19 +78,11 @@ public class PrincipalUI extends JFrame
 		contentPane.add(tab_chat);
 		tab_chat.setLayout(null);
 		
-		escribirTexto = new JTextField();
-		escribirTexto.setBounds(12, 430, 602, 34);
-		tab_chat.add(escribirTexto);
-		escribirTexto.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(65, 105, 225)));
-		escribirTexto.setForeground(new Color(128, 128, 128));
-		escribirTexto.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		escribirTexto.setColumns(10);
-		
-		JPanel azul = new JPanel();
-		azul.setBackground(new Color(65, 105, 225));
-		azul.setBounds(0, 0, 65, 489);
-		toolbar.add(azul);
-		azul.setLayout(null);
+		JPanel bg_toolbar = new JPanel();
+		bg_toolbar.setBackground(new Color(65, 105, 225));
+		bg_toolbar.setBounds(0, 0, 65, 489);
+		toolbar.add(bg_toolbar);
+		bg_toolbar.setLayout(null);
 		
 		JButton salir = new JButton("");
 		salir.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/salir.png")));
@@ -106,7 +96,7 @@ public class PrincipalUI extends JFrame
 		salir.setBorderPainted(false);
 		salir.setContentAreaFilled(false);
 		salir.setBounds(13, 425, 45, 43);
-		azul.add(salir);
+		bg_toolbar.add(salir);
 		
 		chatContainer = new JPanel();
 		chatContainer.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(227, 227, 227)));
@@ -138,7 +128,7 @@ public class PrincipalUI extends JFrame
 		
 		JButton amigos = new JButton("");
 		amigos.setBounds(10, 68, 45, 52);
-		azul.add(amigos);
+		bg_toolbar.add(amigos);
 		amigos.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/amigos.png")));
 		amigos.setContentAreaFilled(false);
 		amigos.setBorderPainted(false);	
@@ -148,23 +138,23 @@ public class PrincipalUI extends JFrame
 		chats.setContentAreaFilled(false);
 		chats.setBorderPainted(false);
 		chats.setBounds(10, 10, 45, 52);
-		azul.add(chats);
+		bg_toolbar.add(chats);
 		
-		JPanel blueBar = new JPanel();
-		blueBar.setBackground(new Color(65, 105, 225));
-		blueBar.setBounds(0, 0, 652, 60);
-		tab_chat.add(blueBar);
-		blueBar.setLayout(null);
+		JPanel bg_chat = new JPanel();
+		bg_chat.setBackground(new Color(65, 105, 225));
+		bg_chat.setBounds(0, 0, 652, 60);
+		tab_chat.add(bg_chat);
+		bg_chat.setLayout(null);
 		
 		descripcionChat = new JLabel("descripcionChat");
 		descripcionChat.setBounds(11, 30, 119, 21);
-		blueBar.add(descripcionChat);
+		bg_chat.add(descripcionChat);
 		descripcionChat.setForeground(new Color(211, 211, 211));
 		descripcionChat.setFont(new Font("Segoe UI", Font.BOLD, 15));
 		
 		nombreChat = new JLabel("id_chat / nombrechat");
 		nombreChat.setBounds(10, 4, 190, 33);
-		blueBar.add(nombreChat);
+		bg_chat.add(nombreChat);
 		nombreChat.setForeground(new Color(255, 255, 255));
 		nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 18));
 		
@@ -205,7 +195,7 @@ public class PrincipalUI extends JFrame
 		ajustes.setContentAreaFilled(false);
 		ajustes.setBorderPainted(false);
 		ajustes.setBounds(15, 373, 33, 43);
-		azul.add(ajustes);
+		bg_toolbar.add(ajustes);
 		
 		init();
 		
@@ -213,8 +203,8 @@ public class PrincipalUI extends JFrame
 	
 	private void init()
 	{
-		chats = new ChatsUsuario(LoginUI.login);
-		if (chats.mostrarListaChats(container))
+		chatsU = new ChatsUsuario(LoginUI.login);
+		if (chatsU.mostrarListaChats(container))
 		{
 			container.setVisible(true);
 		}	

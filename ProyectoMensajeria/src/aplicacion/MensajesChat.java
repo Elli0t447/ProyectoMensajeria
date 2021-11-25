@@ -9,6 +9,8 @@ import java.sql.SQLException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.MatteBorder;
 
 import interfaz.PrincipalUI;
 
@@ -51,7 +53,7 @@ public class MensajesChat
 				
 				JLabel textoMensaje = new JLabel(mensaje);
 				textoMensaje.setForeground(Color.DARK_GRAY);
-				textoMensaje.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+				textoMensaje.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 				textoMensaje.setBounds(7, 26, 570, 13);
 				msjPanel.add(textoMensaje);
 			}
@@ -68,10 +70,35 @@ public class MensajesChat
 		}
 	}
 	
+	public void enviarMensaje(int id_c, int id_u, String mensaje)
+	{
+		Connection cn = LoginUsuario.getConexion();
+		
+		try
+		{			
+			if (cn != null)
+			{
+				PreparedStatement pst = cn.prepareStatement("INSERT INTO mensaje (id_mensaje, id_chat, texto, fecha, id_usuario) VALUES (DEFAULT,?,?,now(),?)");
+				pst.setInt(1, id_c);
+				pst.setString(2, mensaje);
+				pst.setInt(3, id_u);
+                pst.executeUpdate();
+			}
+			else
+			{
+				System.out.println("Conexión nula.");
+			}
+		}
+		catch (SQLException e)
+		{
+			System.out.println("Usuario con el mismo nombre ya existe");
+		}
+	}
+	
 	private ResultSet mensajesUserEnChat(int id_c)
 	{
-		Connection cn = ChatsUsuario.getLogin().getConexion();
-		String consultaSQL = "SELECT texto, id_usuario, id_chat FROM mensaje WHERE id_chat = ?";
+		Connection cn = LoginUsuario.getConexion();
+		String consultaSQL = "SELECT texto, id_usuario, id_chat FROM mensaje WHERE id_chat = ? ORDER BY fecha ASC";
 		
 		ResultSet rs = null;
 		
