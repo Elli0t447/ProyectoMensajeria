@@ -2,6 +2,8 @@ package aplicacion;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
 
 import javax.swing.JButton;
@@ -9,19 +11,23 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import interfaz.PrincipalUI;
 
 public class ChatsUsuario 
 {
-	private LoginUsuario login;
+	private static LoginUsuario login;
+	
+	private int idChat;
+	private String nomChat;
 	
 	public ChatsUsuario(LoginUsuario l)
 	{
 		login = l;
 	}
 	
-	public LoginUsuario getLogin() { return login; }
+	public static LoginUsuario getLogin() { return login; }
 	
-	public boolean mostrarChats(JPanel padre)
+	public boolean mostrarListaChats(JPanel padre)
 	{
 		ResultSet rsConver = conversUser();
 		ResultSet rsGrupo = gruposUser();
@@ -34,6 +40,7 @@ public class ChatsUsuario
 		{
 			while (rsConver.next())
 			{
+				idChat = rsConver.getInt("id_chat");
 				int idUser1 = rsConver.getInt("id_usu1");
 				int idUser2 = rsConver.getInt("id_usu2");
 				
@@ -41,19 +48,18 @@ public class ChatsUsuario
 				
 				if (idUser1 != login.getIdUsuario())
 				{
-					usuarioFinal = idUser1;
-					
+					usuarioFinal = idUser1;				
 				}
 				else
 				{
 					usuarioFinal = idUser2;
 				}
 				
-				String nombreUsuario = login.nombreUserPorId(usuarioFinal);
+				nomChat =  "Chat con " + LoginUsuario.nombreUserPorId(usuarioFinal);
 				
 				// Creacion del elemento de la interfaz que contiene la conversacion
 				JPanel panelChat = new JPanel();				
-				panelChat.setBackground(new Color(255, 255, 255));
+				panelChat.setBackground(new Color(255, 250, 250));
 				panelChat.setBounds(10, positionUI, 146, 52);
 				panelChat.setBorder(new EmptyBorder(10, 10, 10, 10));
 				panelChat.setLayout(null);
@@ -61,13 +67,25 @@ public class ChatsUsuario
 				
 				positionUI += incremento;
 				
-				JButton nombreChat = new JButton("Chat con " + nombreUsuario);
+				String nomIndividual = nomChat;
+				int idIndividual = idChat;
+				JButton nombreChat = new JButton(nomChat);
 				nombreChat.setBounds(-5,0,151,35);
-				nombreChat.setBackground(new Color(255, 255, 255));
+				nombreChat.setBackground(new Color(255, 250, 250));
 				nombreChat.setBorderPainted(false);
 				nombreChat.setHorizontalAlignment(SwingConstants.LEFT);
 				nombreChat.setContentAreaFilled(true);
-				nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 13));
+				nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 13));			
+				nombreChat.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) 
+					{		
+						MensajesChat mC = new MensajesChat();				
+						PrincipalUI.descripcionChat.setText("");
+						PrincipalUI.containerMsj.removeAll();
+				
+						mC.cargarChat(idIndividual, PrincipalUI.nombreChat, nomIndividual, PrincipalUI.containerMsj);										
+					}
+				});
 				panelChat.add(nombreChat);
 							
 				countChats++;
@@ -75,12 +93,13 @@ public class ChatsUsuario
 			
 			while (rsGrupo.next())
 			{
-				String nomGrupo = rsGrupo.getString("nombre");
+				nomChat = rsGrupo.getString("nombre");
 				String descripcion = rsGrupo.getString("descripcion");
+				idChat = rsGrupo.getInt("id_chat");
 				
 				// Creacion del elemento de la interfaz que contiene el grupo
 				JPanel panelChat = new JPanel();				
-				panelChat.setBackground(new Color(255, 255, 255));
+				panelChat.setBackground(new Color(255, 250, 250));
 				panelChat.setBounds(10, positionUI, 146, 52);
 				panelChat.setBorder(new EmptyBorder(10, 10, 10, 10));
 				panelChat.setLayout(null);
@@ -88,15 +107,26 @@ public class ChatsUsuario
 				
 				positionUI += incremento;
 				
-				JButton nombreChat = new JButton(nomGrupo);
+				String nomIndividual = nomChat;
+				int idIndividual = idChat;
+				JButton nombreChat = new JButton(nomChat);
 				nombreChat.setBounds(-5,0,151,35);
-				nombreChat.setBackground(new Color(255, 255, 255));
+				nombreChat.setBackground(new Color(255, 250, 250));
 				nombreChat.setBorderPainted(false);
 				nombreChat.setHorizontalAlignment(SwingConstants.LEFT);
 				nombreChat.setContentAreaFilled(true);
 				nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 13));
-				panelChat.add(nombreChat);
+				nombreChat.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) 
+					{					
+						MensajesChat mC = new MensajesChat();				
+						PrincipalUI.descripcionChat.setText("");
+						PrincipalUI.containerMsj.removeAll();
 				
+						mC.cargarChat(idIndividual, PrincipalUI.nombreChat, nomIndividual, PrincipalUI.containerMsj);	
+					}
+				});
+				panelChat.add(nombreChat);	
 				
 				JLabel descripcionChat = new JLabel(descripcion);
 				descripcionChat.setBounds(10,30,146,20);
@@ -166,6 +196,6 @@ public class ChatsUsuario
 	        System.out.println("Error al seleccionar datos");
 	    }
 	
-		return rs;		
+		return rs;
 	}
 }

@@ -6,7 +6,7 @@ public class LoginUsuario
 {
 	private String usuario, contraseña;
 	private int id;
-	private Connection cn;
+	private static Connection cn;
 	
 	public String getUsuario() { return usuario; }
 	public String getContraseña() { return contraseña; }
@@ -51,7 +51,7 @@ public class LoginUsuario
 		
 	}
 	
-	public String nombreUserPorId(int id_u)
+	public static String nombreUserPorId(int id_u)
 	{
 	    ResultSet rs = null;
 	    String nombreResult = null;
