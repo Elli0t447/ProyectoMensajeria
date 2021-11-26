@@ -90,7 +90,7 @@ public class LoginUI extends JFrame {
 		     System.out.println("Error icono no encontrado");
 		  }
 		
-		setTitle("Mensajer\u00EDa");
+		setTitle("Mensajer\u00EDa - inicio");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 387, 509);
 		contentPane = new JPanel();
@@ -218,7 +218,7 @@ public class LoginUI extends JFrame {
 	     {
 	    	 dispose();
 	    	 new PrincipalUI().setVisible(true);
-			 System.out.println("Log in correcto!");
+			 System.out.println("Log-in correcto!");
 	     }
 	     else
 	     {

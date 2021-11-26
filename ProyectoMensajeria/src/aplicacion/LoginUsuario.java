@@ -4,12 +4,13 @@ import java.sql.*;
 
 public class LoginUsuario 
 {
-	private String usuario, contraseña;
+	private String usuario;
+	private static String contraseña;
 	private static int id;
 	private static Connection cn;
 	
 	public String getUsuario() { return usuario; }
-	public String getContraseña() { return contraseña; }
+	public static String getContraseña() { return contraseña; }
 	public static int getIdUsuario() { return id; }
 	public static Connection getConexion() { return cn; }
 	
@@ -34,7 +35,7 @@ public class LoginUsuario
 				
 				if (user.equals(usuario) && pass.equals(contraseña))
 				{
-					System.out.println("Usuario existe en la base de datos");
+					System.out.println("Usuario " + usuario + " existe en la base de datos!");
 					return true;
 				}
 				else
@@ -115,5 +116,23 @@ public class LoginUsuario
 		{
 			System.out.println("Usuario con el mismo nombre ya existe");
 		}
+	}
+	
+	public static ResultSet allNomUsuarios()
+	{
+		ResultSet rs = null;
+
+	    try 
+	    {
+	        PreparedStatement pst = cn.prepareStatement("SELECT nombre FROM usuario");
+	        rs = pst.executeQuery();
+	        
+	    } 
+	    catch (SQLException ex) 
+	    {
+	        System.out.println("Error al seleccionar datos");
+	    }
+	    
+		return rs;
 	}
 }

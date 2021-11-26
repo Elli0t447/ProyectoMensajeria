@@ -7,9 +7,12 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -45,6 +48,17 @@ public class MensajesChat
 				int usuario = rs.getInt("id_usuario");
 				msj = rs.getInt("id_mensaje");
 				
+				// Fecha actual
+				Date hoy = Date.valueOf(LocalDate.now());
+				
+				// Fecha de envio del mensaje
+				Date fecha = rs.getDate("fecha");
+				Timestamp fechaHora = rs.getTimestamp("fecha");
+								
+				// Hora de envio del mensaje
+				String[] aux = fechaHora.toString().split("\\.");			
+				String hora[] = aux[0].split("\s");	
+				
 				String nomUsuario = LoginUsuario.nombreUserPorId(usuario);
 	
 				JPanel msjPanel = new JPanel();
@@ -79,7 +93,7 @@ public class MensajesChat
 				JLabel usuarioMensaje = new JLabel(nomUsuario);
 				usuarioMensaje.setForeground(new Color(65, 105, 225));
 				usuarioMensaje.setFont(new Font("Tahoma", Font.BOLD, 14));
-				usuarioMensaje.setBounds(10, 10, 87, 13);
+				usuarioMensaje.setBounds(10, 10, (int)usuarioMensaje.getPreferredSize().getWidth() + 16, 13);
 				msjPanel.add(usuarioMensaje);
 				
 				JLabel textoMensaje = new JLabel(mensaje);
@@ -87,6 +101,23 @@ public class MensajesChat
 				textoMensaje.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 				textoMensaje.setBounds(12, 26, 570, 13);
 				msjPanel.add(textoMensaje);	
+				
+				JLabel fechaMensaje = new JLabel();
+				fechaMensaje.setForeground(Color.GRAY);
+				fechaMensaje.setFont(new Font("Segoe UI", Font.BOLD, 9));
+				fechaMensaje.setBounds((int)usuarioMensaje.getPreferredSize().getWidth() + 23, 10, 570, 13);
+				msjPanel.add(fechaMensaje);	
+				
+				if (fecha.before(hoy))
+				{
+					fechaMensaje.setText(fecha.toString());
+				}
+				else
+				{
+					fechaMensaje.setText("hoy a las " + hora[1]);
+				}
+				
+				
 				
 				msjPanel.addMouseListener(new MouseAdapter() 
 				{
@@ -194,11 +225,11 @@ public class MensajesChat
 					}
 					
 					@Override
-					public void mouseClicked(MouseEvent e) 
+					public void mouseClicked(MouseEvent e) 	
 					{
-						String opcion = JOptionPane.showInputDialog(null, "Editar mensaje: ", "Editar", JOptionPane.INFORMATION_MESSAGE);					
+						String opcion = (String) JOptionPane.showInputDialog(null, "Editar mensaje: ", "Editar", JOptionPane.QUESTION_MESSAGE, null, null, mensaje);
 						
-						if (opcion.equals(""))
+						if (opcion == null)
 						{
 							System.out.println("na no editao");
 						}
@@ -210,7 +241,7 @@ public class MensajesChat
 							PrincipalUI.setCurrentChatDesc(PrincipalUI.getCurrentChatDesc());
 							PrincipalUI.setCurrentChatTitulo(PrincipalUI.getCurrentChatTitulo());
 							PrincipalUI.nombreChat.setText(PrincipalUI.getCurrentChatTitulo());
-							PrincipalUI.nombreChat.setBounds(10, 4, 190, 33);
+							
 							PrincipalUI.descripcionChat.setText(PrincipalUI.getCurrentChatDesc());
 							PrincipalUI.containerMsj.removeAll();
 							PrincipalUI.setChatEnvio(PrincipalUI.getCurrentChat());
@@ -286,7 +317,10 @@ public class MensajesChat
 
 							mcc = PrincipalUI.mC;
 							PrincipalUI.nombreChat.setText(PrincipalUI.getCurrentChatTitulo());
-							PrincipalUI.nombreChat.setBounds(10, 4, 190, 33);
+							if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == true)
+							{
+								PrincipalUI.nombreChat.setBounds(10, 12, 361, 33);
+							}
 							PrincipalUI.descripcionChat.setText(PrincipalUI.getCurrentChatDesc());
 							PrincipalUI.containerMsj.removeAll();
 							PrincipalUI.setChatEnvio(PrincipalUI.getCurrentChat());
@@ -348,7 +382,7 @@ public class MensajesChat
 	private ResultSet mensajesUserEnChat(int id_c)
 	{
 		Connection cn = LoginUsuario.getConexion();
-		String consultaSQL = "SELECT id_mensaje, texto, id_usuario, id_chat FROM mensaje WHERE id_chat = ? ORDER BY fecha ASC";
+		String consultaSQL = "SELECT * FROM mensaje WHERE id_chat = ? ORDER BY fecha ASC";
 		
 		ResultSet rs = null;
 		

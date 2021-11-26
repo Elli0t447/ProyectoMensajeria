@@ -78,16 +78,16 @@ public class ChatsUsuario
 				nombreChat.setFocusPainted(false);
 				nombreChat.setHorizontalAlignment(SwingConstants.LEFT);
 				nombreChat.setContentAreaFilled(true);
-				nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 13));			
+				nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 13));		
+				
 				nombreChat.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) 
 					{		
-						System.out.println(PrincipalUI.getCurrentChat());
 						MensajesChat mC = new MensajesChat();
 						PrincipalUI.nombreChat.setText(nomIndividual);
 						PrincipalUI.setCurrentChatTitulo(nomIndividual);
 						PrincipalUI.setCurrentChatDesc("");
-						PrincipalUI.nombreChat.setBounds(10, 12, 190, 33);
+						PrincipalUI.nombreChat.setBounds(10, 12, (int)PrincipalUI.nombreChat.getPreferredSize().getWidth() + 10, 33);
 						PrincipalUI.descripcionChat.setText("");
 						PrincipalUI.containerMsj.removeAll();
 						PrincipalUI.setChatEnvio(idIndividual);
@@ -141,7 +141,7 @@ public class ChatsUsuario
 						PrincipalUI.nombreChat.setText(nomIndividual);
 						PrincipalUI.setCurrentChatTitulo(nomIndividual);
 						PrincipalUI.setCurrentChatDesc(descripcion);
-						PrincipalUI.nombreChat.setBounds(10, 4, 190, 33);					
+						PrincipalUI.nombreChat.setBounds(10, 4, (int)PrincipalUI.nombreChat.getPreferredSize().getWidth() + 10, 33);					
 						PrincipalUI.descripcionChat.setText(descripcion);
 						PrincipalUI.containerMsj.removeAll();
 						PrincipalUI.setChatEnvio(idIndividual);
@@ -150,7 +150,8 @@ public class ChatsUsuario
 					}
 				});
 				panelChat.add(nombreChat);	
-				
+				panelChat.revalidate();
+				panelChat.repaint();
 							
 				countChats++;
 			}
