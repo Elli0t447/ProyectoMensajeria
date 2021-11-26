@@ -18,8 +18,16 @@ import interfaz.PrincipalUI;
 public class ChatsUsuario 
 {
 	private int idChat;
-	private String nomChat;
+	private String nomChat;	
+	private boolean administrador;
 	private static int positionUI;
+	
+	private MensajesChat mC;
+	
+	public ChatsUsuario(MensajesChat constructor)
+	{
+		mC = constructor;
+	}
 	
 	public boolean mostrarListaChats(JPanel padre)
 	{
@@ -74,13 +82,15 @@ public class ChatsUsuario
 				nombreChat.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) 
 					{		
+						System.out.println(PrincipalUI.getCurrentChat());
 						MensajesChat mC = new MensajesChat();
 						PrincipalUI.nombreChat.setText(nomIndividual);
+						PrincipalUI.setCurrentChatTitulo(nomIndividual);
+						PrincipalUI.setCurrentChatDesc("");
 						PrincipalUI.nombreChat.setBounds(10, 12, 190, 33);
 						PrincipalUI.descripcionChat.setText("");
 						PrincipalUI.containerMsj.removeAll();
 						PrincipalUI.setChatEnvio(idIndividual);
-						
 						mC.cargarChat(idIndividual, PrincipalUI.containerMsj);	
 						
 					}
@@ -92,6 +102,7 @@ public class ChatsUsuario
 			while (rsGrupo.next())
 			{
 				nomChat = rsGrupo.getString("nombre");
+				administrador = rsGrupo.getBoolean("administra");
 				String descripcion = rsGrupo.getString("descripcion");
 				idChat = rsGrupo.getInt("id_chat");
 				
@@ -107,6 +118,7 @@ public class ChatsUsuario
 				
 				String nomIndividual = nomChat;
 				int idIndividual = idChat;
+				boolean admin = administrador;
 				
 				JLabel descripcionChat = new JLabel(descripcion);
 				descripcionChat.setBounds(10,25,146,20);
@@ -125,12 +137,15 @@ public class ChatsUsuario
 				nombreChat.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) 
 					{											
-						MensajesChat mC = new MensajesChat();	
+						mC = new MensajesChat();	
 						PrincipalUI.nombreChat.setText(nomIndividual);
-						PrincipalUI.nombreChat.setBounds(10, 4, 190, 33);
+						PrincipalUI.setCurrentChatTitulo(nomIndividual);
+						PrincipalUI.setCurrentChatDesc(descripcion);
+						PrincipalUI.nombreChat.setBounds(10, 4, 190, 33);					
 						PrincipalUI.descripcionChat.setText(descripcion);
 						PrincipalUI.containerMsj.removeAll();
 						PrincipalUI.setChatEnvio(idIndividual);
+						PrincipalUI.setCurrentAdministra(admin);
 						mC.cargarChat(idIndividual, PrincipalUI.containerMsj);	
 					}
 				});
@@ -158,7 +173,7 @@ public class ChatsUsuario
 		return false;
 	}
 	
-	private ResultSet conversUser()
+	private static ResultSet conversUser()
 	{
 		Connection cn = LoginUsuario.getConexion();
 		int id_usuario = LoginUsuario.getIdUsuario();
@@ -181,11 +196,11 @@ public class ChatsUsuario
 		return rs;
 	}
 	
-	private ResultSet gruposUser()
+	private static ResultSet gruposUser()
 	{
 		Connection cn = LoginUsuario.getConexion();
 		int id_usuario = LoginUsuario.getIdUsuario();
-		String consultaSQL = "SELECT usuario.id_usuario, participa.id_chat, grupo.nombre, grupo.descripcion FROM usuario INNER JOIN participa USING (id_usuario) INNER JOIN grupo USING (id_chat) WHERE usuario.id_usuario = ?";
+		String consultaSQL = "SELECT usuario.id_usuario, participa.id_chat, administra, grupo.nombre, grupo.descripcion FROM usuario INNER JOIN participa USING (id_usuario) INNER JOIN grupo USING (id_chat) WHERE usuario.id_usuario = ?";
 		
 		ResultSet rs = null;
 		
@@ -203,4 +218,33 @@ public class ChatsUsuario
 	
 		return rs;
 	}
+
+	public boolean isConver(int id_c)
+	{
+		ResultSet conversaciones = conversUser();
+		
+		try 
+		{
+			while (conversaciones.next())
+			{
+				int idEncontrada = conversaciones.getInt("id_chat");
+				if (id_c == idEncontrada)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		} 
+		catch (SQLException e) 
+		{
+			System.out.println("Error de SQL");
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
 }

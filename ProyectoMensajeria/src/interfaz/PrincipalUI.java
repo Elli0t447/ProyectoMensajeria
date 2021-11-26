@@ -20,13 +20,15 @@ import aplicacion.LoginUsuario;
 import aplicacion.MensajesChat;
 
 import javax.swing.SwingConstants;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class PrincipalUI extends JFrame 
 {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private ChatsUsuario chatsU;
-	private static MensajesChat mC;
+	public static ChatsUsuario chatsU;
+	public static MensajesChat mC;
 	
 	public static JPanel tab_chat;
 	public static JPanel tab_noChat;
@@ -44,8 +46,21 @@ public class PrincipalUI extends JFrame
 	public static JScrollPane scrollMensaje;
 	
 	private static int chatEnvio;
+	private static boolean currentAdministra;
+	private static String currentChatTitulo;
+	private static String currentChatDesc;
+	
+	public static void setCurrentChatTitulo(String c) { currentChatTitulo = c;}
+	public static void setCurrentChatDesc(String d) { currentChatDesc = d;}
+	
+	public static String getCurrentChatTitulo() { return currentChatTitulo; }
+	public static String getCurrentChatDesc() { return currentChatDesc; }
+	
+	public static void setCurrentAdministra(boolean a) { currentAdministra = a;}
+	public static boolean getCurrentAdministra() { return currentAdministra; }
 	
 	public static void setChatEnvio(int c) { chatEnvio = c;}
+	public static int getCurrentChat() { return chatEnvio; }
 
 	/**
 	 * Create the frame.
@@ -191,7 +206,7 @@ public class PrincipalUI extends JFrame
 		scrollMensaje.getVerticalScrollBar().setUnitIncrement(7);
 		scrollMensaje.setBorder(null);
 		scrollMensaje.setViewportBorder(null);
-		scrollMensaje.setViewportView(containerMsj);	
+		scrollMensaje.setViewportView(containerMsj);
 		tab_chat.add(scrollMensaje);
 		
 		tab_noChat = new JPanel();
@@ -260,7 +275,7 @@ public class PrincipalUI extends JFrame
 	private void init()
 	{
 		
-		chatsU = new ChatsUsuario();
+		chatsU = new ChatsUsuario(mC);
 		if (chatsU.mostrarListaChats(container))
 		{
 			container.setVisible(true);

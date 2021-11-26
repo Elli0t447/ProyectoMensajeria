@@ -100,6 +100,7 @@ public class LoginUI extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel form = new JPanel();
+		
 		form.setBounds(55, 76, 269, 337);
 		form.setBackground(new Color(255, 255, 255));
 		contentPane.add(form);
@@ -147,29 +148,29 @@ public class LoginUI extends JFrame {
 		
 		
 		
-		JButton btnNewButton = new JButton("ENTRAR");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton botonLogin = new JButton("ENTRAR");
+		botonLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
 				 loginAction();
 			}
 		});
-		btnNewButton.setBorderPainted(false);
-		btnNewButton.setBackground(new Color(65, 105, 225));
-		btnNewButton.setForeground(new Color(255, 255, 255));
-		btnNewButton.setFont(new Font("Segoe UI", Font.BOLD, 20));
-		btnNewButton.setBounds(68, 210, 132, 47);
-		form.add(btnNewButton);
+		botonLogin.setBorderPainted(false);
+		botonLogin.setBackground(new Color(65, 105, 225));
+		botonLogin.setForeground(new Color(255, 255, 255));
+		botonLogin.setFont(new Font("Segoe UI", Font.BOLD, 20));
+		botonLogin.setBounds(68, 210, 132, 47);
+		form.add(botonLogin);
 		
 		
 		
-		JButton btnNewButton_1 = new JButton("CREAR CUENTA");
-		btnNewButton_1.setForeground(new Color(105, 105, 105));
-		btnNewButton_1.setHorizontalAlignment(SwingConstants.LEFT);
-		btnNewButton_1.setAlignmentY(Component.TOP_ALIGNMENT);
-		btnNewButton_1.setContentAreaFilled(false);
-		btnNewButton_1.setBorder(new MatteBorder(0, 0, 1, 0, (Color) new Color(169, 169, 169)));
-		btnNewButton_1.addActionListener(new ActionListener() {
+		JButton botonNuevaCuenta = new JButton("CREAR CUENTA");
+		botonNuevaCuenta.setForeground(new Color(105, 105, 105));
+		botonNuevaCuenta.setHorizontalAlignment(SwingConstants.LEFT);
+		botonNuevaCuenta.setAlignmentY(Component.TOP_ALIGNMENT);
+		botonNuevaCuenta.setContentAreaFilled(false);
+		botonNuevaCuenta.setBorder(new MatteBorder(0, 0, 1, 0, (Color) new Color(169, 169, 169)));
+		botonNuevaCuenta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{				
 				String passwordFormated = new String(passwordLogin.getPassword());
@@ -181,10 +182,14 @@ public class LoginUI extends JFrame {
 				passwordLogin.setText("");
 			}
 		});
-		btnNewButton_1.setBackground(new Color(255, 255, 255));
-		btnNewButton_1.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
-		btnNewButton_1.setBounds(91, 291, 91, 21);
-		form.add(btnNewButton_1);
+		botonNuevaCuenta.setBackground(new Color(255, 255, 255));
+		botonNuevaCuenta.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
+		botonNuevaCuenta.setBounds(91, 291, 91, 21);
+		form.add(botonNuevaCuenta);
+		
+		
+		
+		
 		
 		JPanel bg = new JPanel();
 		bg.setBounds(0, 0, 383, 157);
@@ -198,18 +203,16 @@ public class LoginUI extends JFrame {
 		bg.add(imagen);
 		imagen.setIcon(new ImageIcon(LoginUI.class.getResource("/img/chat.png")));
 		
-		JLabel lblNewLabel = new JLabel("Mensajeria");
-		lblNewLabel.setBounds(135, 38, 101, 19);
-		lblNewLabel.setForeground(Color.WHITE);
-		lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		bg.add(lblNewLabel);
-		
-		
+		JLabel iconoText = new JLabel("Mensajeria");
+		iconoText.setBounds(135, 38, 101, 19);
+		iconoText.setForeground(Color.WHITE);
+		iconoText.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		bg.add(iconoText);		
 	}
 	
 	private void loginAction()
 	{
-		String passwordFormated = new String(passwordLogin.getPassword());
+		 String passwordFormated = new String(passwordLogin.getPassword());
 	     login = new LoginUsuario(usuarioLogin.getText(), passwordFormated);
 	     if (login.comprobarUser())
 	     {
