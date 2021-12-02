@@ -76,6 +76,30 @@ public class LoginUsuario
 		return nombreResult;
 	}
 	
+	public static int idUserPorNombre(String nom_u)
+	{
+	    ResultSet rs = null;
+	    int nombreResult = 0;
+	    try 
+	    {
+	        PreparedStatement pst = cn.prepareStatement("SELECT * FROM usuario WHERE nombre = ?");
+	        pst.setString(1, nom_u);
+	        rs = pst.executeQuery();
+	        
+	        while (rs.next())
+	        {
+	        	 nombreResult = rs.getInt("id_usuario");        	
+	        }
+	        
+	    } 
+	    catch (SQLException ex) 
+	    {
+	        System.out.println("Error al seleccionar datos");
+	    }
+	    
+		return nombreResult;
+	}
+	
 	private ResultSet usuarioRegistrado()
 	{
 	    ResultSet rs = null;
@@ -114,7 +138,7 @@ public class LoginUsuario
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Usuario con el mismo nombre ya existe");
+			System.out.println("Usuario con el mismo nombre ya existe error al crear nuevacuenta");
 		}
 	}
 	

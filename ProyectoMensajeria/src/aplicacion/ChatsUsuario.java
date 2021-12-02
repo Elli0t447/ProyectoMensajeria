@@ -5,14 +5,18 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 
+import interfaz.InfoGruposUI;
 import interfaz.PrincipalUI;
 
 public class ChatsUsuario 
@@ -48,6 +52,8 @@ public class ChatsUsuario
 				
 				int usuarioFinal;
 				
+				
+				// Lógica para determinar el usuario que tiene que mostrar en la conversacion 
 				if (idUser1 != LoginUsuario.getIdUsuario())
 				{
 					usuarioFinal = idUser1;				
@@ -67,10 +73,12 @@ public class ChatsUsuario
 				panelChat.setLayout(null);
 				padre.add(panelChat);
 				
+				// Incremento en el panel para que no se acumulen y vayan posicionandose 
 				positionUI += incremento;
 				
 				String nomIndividual = nomChat;
 				int idIndividual = idChat;
+				
 				JButton nombreChat = new JButton(nomChat);
 				nombreChat.setBounds(-5,0,151,35);
 				nombreChat.setBackground(new Color(255, 250, 250));
@@ -97,6 +105,8 @@ public class ChatsUsuario
 				});
 				panelChat.add(nombreChat);
 				countChats++;
+				
+					
 			}
 			
 			while (rsGrupo.next())
@@ -120,11 +130,11 @@ public class ChatsUsuario
 				int idIndividual = idChat;
 				boolean admin = administrador;
 				
-				JLabel descripcionChat = new JLabel(descripcion);
-				descripcionChat.setBounds(10,25,146,20);
-				descripcionChat.setForeground(Color.GRAY);
-				descripcionChat.setFont(new Font("Segoe UI", Font.PLAIN, 9));
-				panelChat.add(descripcionChat);
+				JLabel descripcionChatIndividual = new JLabel(descripcion);
+				descripcionChatIndividual.setBounds(10,25,146,20);
+				descripcionChatIndividual.setForeground(Color.GRAY);
+				descripcionChatIndividual.setFont(new Font("Segoe UI", Font.PLAIN, 9));
+				panelChat.add(descripcionChatIndividual);
 				
 				JButton nombreChat = new JButton(nomChat);
 				nombreChat.setBounds(-5,0,151,35);
@@ -143,6 +153,7 @@ public class ChatsUsuario
 						PrincipalUI.setCurrentChatDesc(descripcion);
 						PrincipalUI.nombreChat.setBounds(10, 4, (int)PrincipalUI.nombreChat.getPreferredSize().getWidth() + 10, 33);					
 						PrincipalUI.descripcionChat.setText(descripcion);
+						PrincipalUI.descripcionChat.setBounds(10, 30, (int)PrincipalUI.descripcionChat.getPreferredSize().getWidth() + 10, 21);
 						PrincipalUI.containerMsj.removeAll();
 						PrincipalUI.setChatEnvio(idIndividual);
 						PrincipalUI.setCurrentAdministra(admin);
@@ -153,6 +164,26 @@ public class ChatsUsuario
 				panelChat.revalidate();
 				panelChat.repaint();
 							
+				// Si es un grupo
+				
+				JLabel infoChat = new JLabel();
+				infoChat.setBounds(559, 10, 33, 36);
+				infoChat.setIcon(new ImageIcon(ChatsUsuario.class.getResource("/img/info.png")));
+				PrincipalUI.bg_chat.add(infoChat);
+				infoChat.addMouseListener(new MouseAdapter()
+				{
+					@Override
+					public void mouseClicked(MouseEvent e)
+					{
+						if (!isConver(PrincipalUI.getCurrentChat()))
+						{
+							InfoGruposUI info = new InfoGruposUI();
+							info.setVisible(true);
+							System.out.println("cositas");
+						}
+					}
+				});
+					
 				countChats++;
 			}
 			

@@ -375,7 +375,7 @@ public class MensajesChat
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Usuario con el mismo nombre ya existe");
+			System.out.println("Usuario con el mismo nombre ya existe (enviarMensaje)");
 		}
 	}
 	
@@ -420,7 +420,7 @@ public class MensajesChat
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Usuario con el mismo nombre ya existe");
+			System.out.println("Usuario con el mismo nombre ya existe (cambiarMensaje)");
 		}
 	}
 	
@@ -443,7 +443,7 @@ public class MensajesChat
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Usuario con el mismo nombre ya existe");
+			System.out.println("Usuario con el mismo nombre ya existe (borrarMensaje)");
 		}
 	}
 }

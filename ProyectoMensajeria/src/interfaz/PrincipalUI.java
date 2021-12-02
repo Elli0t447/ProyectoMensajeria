@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.border.MatteBorder;
 
+import aplicacion.AmigosUsuario;
 import aplicacion.ChatsUsuario;
 import aplicacion.LoginUsuario;
 import aplicacion.MensajesChat;
@@ -47,12 +48,14 @@ public class PrincipalUI extends JFrame
 	
 	private static JScrollPane scrollChat;
 	public static JScrollPane scrollMensaje;
+	private static JScrollPane scrollPeticion;
+	private static JScrollPane scrollAmigos;
 	
 	private static int chatEnvio;
 	private static boolean currentAdministra;
 	private static String currentChatTitulo;
 	private static String currentChatDesc;
-	private JPanel tab_amigos;
+	public static JPanel tab_amigos;
 	private JLabel lblAmigos;
 	private JLabel lblAjustes_1;
 	private JLabel usuarioLabelAjustes;
@@ -64,6 +67,13 @@ public class PrincipalUI extends JFrame
 	private JTextField passwordField;
 	private JLabel iDlabel;
 	private JButton aplicarCambios;
+	public static JLabel descAmigo;
+	public static JLabel descPeti;
+	public static JPanel amigoContainer;
+	public static JPanel peticionesContainer;
+	
+	public static AmigosUsuario amics;
+	public static JPanel bg_chat;
 	
 	public static void setCurrentChatTitulo(String c) { currentChatTitulo = c;}
 	public static void setCurrentChatDesc(String d) { currentChatDesc = d;}
@@ -105,12 +115,12 @@ public class PrincipalUI extends JFrame
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		tab_amigos = new JPanel();
-		tab_amigos.setVisible(false);
-		
 		JPanel tab_ajustes = new JPanel();
 		tab_ajustes.setBackground(Color.WHITE);
 		tab_ajustes.setVisible(false);
+		
+		tab_amigos = new JPanel();
+		tab_amigos.setVisible(false);
 		
 		tab_chat = new JPanel();
 		tab_chat.setVisible(false);
@@ -120,7 +130,7 @@ public class PrincipalUI extends JFrame
 		contentPane.add(tab_chat);
 		tab_chat.setLayout(null);
 		
-		JPanel bg_chat = new JPanel();
+		bg_chat = new JPanel();
 		bg_chat.setBackground(new Color(65, 105, 225));
 		bg_chat.setBounds(0, 0, 652, 60);
 		tab_chat.add(bg_chat);
@@ -151,6 +161,87 @@ public class PrincipalUI extends JFrame
 		scrollMensaje.setViewportBorder(null);
 		scrollMensaje.setViewportView(containerMsj);
 		tab_chat.add(scrollMensaje);
+		tab_amigos.setLayout(null);
+		tab_amigos.setBorder(null);
+		tab_amigos.setBackground(new Color(245, 245, 245));
+		tab_amigos.setBounds(65, 0, 791, 489);
+		contentPane.add(tab_amigos);
+		
+		descAmigo = new JLabel("<html>No tienes amigos, añade a algunos para conversar</html>");
+		descAmigo.setForeground(Color.GRAY);
+		descAmigo.setVisible(true);
+		descAmigo.setFont(new Font("Segoe UI", Font.BOLD, 16));
+		descAmigo.setBounds(10, 54, 179, 63);
+		tab_amigos.add(descAmigo);
+		
+		lblAmigos = new JLabel("Amigos");
+		lblAmigos.setFont(new Font("Segoe UI", Font.BOLD, 19));
+		lblAmigos.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
+		lblAmigos.setBounds(10, 10, 84, 34);
+		tab_amigos.add(lblAmigos);
+		
+		JPanel peticiones = new JPanel();
+		peticiones.setBorder(new MatteBorder(0, 1, 0, 0, (Color) Color.LIGHT_GRAY));
+		peticiones.setBackground(Color.WHITE);
+		peticiones.setBounds(355, 0, 436, 489);
+		tab_amigos.add(peticiones);
+		peticiones.setLayout(null);
+		
+		JLabel lblPeticiones = new JLabel("Peticiones de amistad");
+		lblPeticiones.setBounds(104, 15, 210, 30);
+		lblPeticiones.setFont(new Font("Segoe UI", Font.BOLD, 19));
+		lblPeticiones.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
+		peticiones.add(lblPeticiones);
+		
+		descPeti = new JLabel("<html>Ahora mismo no tienes peticiones de amistad, espera a recibir una</html>");
+		descPeti.setForeground(Color.GRAY);
+		descPeti.setVisible(true);
+		descPeti.setFont(new Font("Segoe UI", Font.BOLD, 16));
+		descPeti.setBounds(85, 102, 273, 50);
+		peticiones.add(descPeti);
+		
+		scrollPeticion = new JScrollPane();
+		scrollPeticion.setSize(418, 409);
+		scrollPeticion.setLocation(10, 70);
+		scrollPeticion.setViewportBorder(null);
+		scrollPeticion.setBorder(null);
+		scrollPeticion.getVerticalScrollBar().setUnitIncrement(7);
+		
+		peticionesContainer = new JPanel();
+		peticionesContainer.setBackground(Color.WHITE);
+		peticionesContainer.setBounds(10, 55, 416, 424);
+		scrollPeticion.setViewportView(peticionesContainer);
+		peticionesContainer.setLayout(null);
+		peticiones.add(scrollPeticion);
+		
+		scrollAmigos = new JScrollPane();
+		scrollAmigos.setSize(335, 430);
+		scrollAmigos.setLocation(10, 54);
+		scrollAmigos.setViewportBorder(null);
+		scrollAmigos.setBorder(null);
+		scrollAmigos.getVerticalScrollBar().setUnitIncrement(7);
+		
+		amigoContainer = new JPanel();
+		amigoContainer.setBackground(new Color(245, 245, 245));
+		amigoContainer.setBounds(10, 58, 335, 421);
+		scrollAmigos.setViewportView(amigoContainer);
+		amigoContainer.setLayout(null);
+		tab_amigos.add(scrollAmigos);
+		
+		JButton newAmigo = new JButton("");
+		newAmigo.setFocusPainted(false);
+		newAmigo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				AnyadirAmigoUI addAmigo = new AnyadirAmigoUI();
+				addAmigo.setVisible(true);
+			}
+		});
+		newAmigo.setBorderPainted(false);
+		newAmigo.setContentAreaFilled(false);
+		newAmigo.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/anyadir_blue.png")));
+		newAmigo.setBounds(97, 19, 43, 21);
+		tab_amigos.add(newAmigo);
 		tab_ajustes.setBounds(65, 0, 791, 489);
 		contentPane.add(tab_ajustes);
 		tab_ajustes.setLayout(null);
@@ -217,6 +308,7 @@ public class PrincipalUI extends JFrame
 						if (!nombreField.getText().equals(r.getString("nombre")) || nombreField.getText().equals(LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuario())))
 						{
 							actualizarUsuario(nombreField.getText(), passwordField.getText(), LoginUsuario.getIdUsuario());
+							usuarioLabelAjustes.setText(nombreField.getText());
 						}
 						else
 						{
@@ -245,18 +337,7 @@ public class PrincipalUI extends JFrame
 		iDlabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		iDlabel.setBounds(201, 53, 47, 24);
 		tab_ajustes.add(iDlabel);
-		tab_amigos.setLayout(null);
-		tab_amigos.setBorder(null);
-		tab_amigos.setBackground(Color.WHITE);
-		tab_amigos.setBounds(65, 0, 791, 489);
-		contentPane.add(tab_amigos);
 		
-		lblAmigos = new JLabel("Amigos");
-		lblAmigos.setFont(new Font("Segoe UI", Font.BOLD, 19));
-		lblAmigos.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
-		lblAmigos.setBounds(10, 10, 84, 34);
-		tab_amigos.add(lblAmigos);
-				
 		JPanel toolbar = new JPanel();
 		toolbar.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(227, 227, 227)));
 		toolbar.setBackground(new Color(255, 250, 250));
@@ -304,26 +385,37 @@ public class PrincipalUI extends JFrame
 		scrollChat.getVerticalScrollBar().setUnitIncrement(7);
 		
 		nochatLabel = new JLabel("No tienes ningun chat :(");
-		nochatLabel.setBorder(new MatteBorder(0, 0, 2, 0, (Color) new Color(65, 105, 225)));
+		nochatLabel.setBorder(null);
 		nochatLabel.setBounds(10, 10, 149, 34);
 		barChat.add(nochatLabel);
 		nochatLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+		scrollChat.setViewportBorder(null);
+		scrollChat.setViewportView(container);	
 		
 		noChatDesc = new JLabel("<html>Añade a un usuario como amigo o crea un grupo para empezar a conversar </html>");
+		noChatDesc.setBounds(10, 40, 124, 58);
+		container.add(noChatDesc);
 		noChatDesc.setVerticalAlignment(SwingConstants.TOP);
-		noChatDesc.setBounds(10, 53, 124, 58);
-		barChat.add(noChatDesc);
 		noChatDesc.setForeground(Color.GRAY);
 		noChatDesc.setHorizontalAlignment(SwingConstants.CENTER);
 		noChatDesc.setFont(new Font("Segoe UI", Font.BOLD, 9));	
-		scrollChat.setViewportBorder(null);
-		scrollChat.setViewportView(container);	
 		barChat.add(scrollChat);
 		
 		JButton amigos = new JButton("");
 		amigos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
+				amics = new AmigosUsuario();
+				
+				if (amics.mostrarListaAmigos(amigoContainer))
+				{
+					descAmigo.setVisible(false);
+				}
+				if (amics.mostrarListaPeticiones(peticionesContainer))
+				{
+					descPeti.setVisible(false);					
+				}
+			
 				tab_amigos.setVisible(true);
 				tab_chat.setVisible(false);
 				tab_ajustes.setVisible(false);
@@ -354,6 +446,40 @@ public class PrincipalUI extends JFrame
 		chats.setBounds(10, 10, 45, 52);
 		bg_toolbar.add(chats);
 		
+		JButton ajustes = new JButton("");
+		ajustes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				tab_ajustes.setVisible(true);
+				tab_noChat.setVisible(false);
+				tab_chat.setVisible(false);
+				barChat.setVisible(false);
+				tab_amigos.setVisible(false);
+				contentPane.revalidate();
+				contentPane.repaint();
+			}
+		});
+		ajustes.setFocusPainted(false);
+		ajustes.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/ajustes.png")));
+		ajustes.setContentAreaFilled(false);
+		ajustes.setBorderPainted(false);
+		ajustes.setBounds(15, 373, 33, 43);
+		bg_toolbar.add(ajustes);
+		
+		JButton anyadir = new JButton("");
+		anyadir.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/anyadir.png")));
+		anyadir.setFocusPainted(false);
+		anyadir.setContentAreaFilled(false);
+		anyadir.setBorderPainted(false);
+		anyadir.setBounds(10, 125, 42, 43);
+		bg_toolbar.add(anyadir);
+		
+		JLabel tituloChats = new JLabel("Chats");
+		tituloChats.setFont(new Font("Segoe UI", Font.BOLD, 21));
+		tituloChats.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
+		tituloChats.setBounds(76, 8, 72, 34);
+		toolbar.add(tituloChats);
+		
 		JTextField escribirTexto = new JTextField();
 		escribirTexto.setBounds(10, 438, 588, 36);
 		PrincipalUI.tab_chat.add(escribirTexto);
@@ -378,32 +504,6 @@ public class PrincipalUI extends JFrame
 				}
 			}
 		});
-		
-		JButton ajustes = new JButton("");
-		ajustes.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) 
-			{
-				tab_ajustes.setVisible(true);
-				tab_noChat.setVisible(false);
-				tab_chat.setVisible(false);
-				barChat.setVisible(false);
-				tab_amigos.setVisible(false);
-				contentPane.revalidate();
-				contentPane.repaint();
-			}
-		});
-		ajustes.setFocusPainted(false);
-		ajustes.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/ajustes.png")));
-		ajustes.setContentAreaFilled(false);
-		ajustes.setBorderPainted(false);
-		ajustes.setBounds(15, 373, 33, 43);
-		bg_toolbar.add(ajustes);
-		
-		JLabel tituloChats = new JLabel("Chats");
-		tituloChats.setFont(new Font("Segoe UI", Font.BOLD, 21));
-		tituloChats.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
-		tituloChats.setBounds(76, 8, 72, 34);
-		toolbar.add(tituloChats);
 		
 		tab_noChat = new JPanel();
 		tab_noChat.setBorder(null);
@@ -489,7 +589,7 @@ public class PrincipalUI extends JFrame
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Usuario con el mismo nombre ya existe");
+			System.out.println("Usuario con el mismo nombre ya existe (actualizarUsuario)");
 		}
 	}
 }
