@@ -33,19 +33,6 @@ public class AnyadirAmigoUI extends JDialog
 	public JComboBox getNoAmigosBox() { return noAmigosBox; }
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			AnyadirAmigoUI dialog = new AnyadirAmigoUI();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Create the dialog.
 	 */
 	public AnyadirAmigoUI() {

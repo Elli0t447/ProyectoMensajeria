@@ -14,8 +14,6 @@ import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
@@ -445,7 +443,7 @@ public class PrincipalUI extends JFrame
 		container.setLayout(null);
 		
 		scrollChat = new JScrollPane();
-		scrollChat.setBounds(0, 2, 184, 487);
+		scrollChat.setBounds(0, 2, 184, 430);
 		scrollChat.setBorder(new MatteBorder(0, 0, 0, 1, (Color) new Color(227, 227, 227)));
 		scrollChat.getVerticalScrollBar().setUnitIncrement(7);
 		
@@ -551,6 +549,13 @@ public class PrincipalUI extends JFrame
 		bg_toolbar.add(ajustes);
 		
 		JButton anyadir = new JButton("");
+		anyadir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				CrearGrupoUI crearGrp = new CrearGrupoUI();
+				crearGrp.setVisible(true);
+			}
+		});
 		anyadir.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/anyadir.png")));
 		anyadir.setFocusPainted(false);
 		anyadir.setContentAreaFilled(false);

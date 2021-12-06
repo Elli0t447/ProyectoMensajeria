@@ -1,9 +1,7 @@
 package interfaz;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -12,25 +10,12 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
-import java.awt.Dialog.ModalityType;
+
 
 public class InfoGruposUI extends JDialog 
 {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			InfoGruposUI dialog = new InfoGruposUI();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Create the dialog.
@@ -73,7 +58,7 @@ public class InfoGruposUI extends JDialog
 		panel_1.setBounds(15, 103, 224, 297);
 		contentPanel.add(panel_1);
 		
-		JLabel descripcionGroup = new JLabel("<html>Descripcion larga del grupo lorem ipsum cositas sis snnono asdjajsaj</html>");
+		JLabel descripcionGroup = new JLabel("<html>Descripcion larga del grupo lorem ipsum cositas ipsum lorem</html>");
 		descripcionGroup.setVerticalAlignment(SwingConstants.TOP);
 		descripcionGroup.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		descripcionGroup.setBounds(271, 103, 150, 293);

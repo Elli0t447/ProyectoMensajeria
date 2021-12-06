@@ -97,7 +97,7 @@ public class AmigosUsuario
 				});
 				panelAmigo.add(borrarAmigo);
 						
-				//padre.setPreferredSize(new Dimension(650, positionUI));
+				padre.setPreferredSize(new Dimension(650, positionUI));
 				padre.revalidate();
 				padre.repaint();
 				countAmigos++;
@@ -226,7 +226,7 @@ public class AmigosUsuario
 		return false;
 	}
 	
-	private ResultSet amigosUser(int id_u)
+	public ResultSet amigosUser(int id_u)
 	{
 		ResultSet rs = null;
 		
