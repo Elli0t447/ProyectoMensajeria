@@ -52,36 +52,36 @@ public class InfoGruposUI extends JDialog
 		contentPanel.add(panel);
 		panel.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Nombre grupo");
-		lblNewLabel.setBounds(10, 10, 130, 25);
-		panel.add(lblNewLabel);
-		lblNewLabel.setForeground(new Color(255, 255, 255));
-		lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		JLabel nombreGrupo = new JLabel("Nombre grupo");
+		nombreGrupo.setBounds(10, 10, 130, 25);
+		panel.add(nombreGrupo);
+		nombreGrupo.setForeground(new Color(255, 255, 255));
+		nombreGrupo.setFont(new Font("Segoe UI", Font.BOLD, 18));
 		
-		JLabel lblNewLabel_3 = new JLabel("Fecha creaci\u00F3n: 20/09/2021");
-		lblNewLabel_3.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-		lblNewLabel_3.setForeground(new Color(255, 255, 255));
-		lblNewLabel_3.setBounds(259, 21, 200, 13);
-		panel.add(lblNewLabel_3);
+		JLabel fechaCreacion = new JLabel("Fecha creaci\u00F3n: 20/09/2021");
+		fechaCreacion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		fechaCreacion.setForeground(new Color(255, 255, 255));
+		fechaCreacion.setBounds(259, 21, 200, 13);
+		panel.add(fechaCreacion);
 		
-		JLabel lblNewLabel_1 = new JLabel("Participantes:");
-		lblNewLabel_1.setFont(new Font("Segoe UI", Font.PLAIN, 17));
-		lblNewLabel_1.setBounds(16, 65, 105, 36);
-		contentPanel.add(lblNewLabel_1);
+		JLabel labelParticip = new JLabel("Participantes:");
+		labelParticip.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+		labelParticip.setBounds(16, 65, 105, 36);
+		contentPanel.add(labelParticip);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(15, 103, 224, 297);
 		contentPanel.add(panel_1);
 		
-		JLabel lblNewLabel_2 = new JLabel("<html>Descripcion larga del grupo lorem ipsum cositas sis snnono asdjajsaj</html>");
-		lblNewLabel_2.setVerticalAlignment(SwingConstants.TOP);
-		lblNewLabel_2.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		lblNewLabel_2.setBounds(271, 103, 150, 293);
-		contentPanel.add(lblNewLabel_2);
+		JLabel descripcionGroup = new JLabel("<html>Descripcion larga del grupo lorem ipsum cositas sis snnono asdjajsaj</html>");
+		descripcionGroup.setVerticalAlignment(SwingConstants.TOP);
+		descripcionGroup.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		descripcionGroup.setBounds(271, 103, 150, 293);
+		contentPanel.add(descripcionGroup);
 		
-		JLabel lblNewLabel_1_1 = new JLabel("Descripci\u00F3n:");
-		lblNewLabel_1_1.setFont(new Font("Segoe UI", Font.PLAIN, 17));
-		lblNewLabel_1_1.setBounds(271, 65, 96, 36);
-		contentPanel.add(lblNewLabel_1_1);
+		JLabel labelDesc = new JLabel("Descripci\u00F3n:");
+		labelDesc.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+		labelDesc.setBounds(271, 65, 96, 36);
+		contentPanel.add(labelDesc);
 	}
 }

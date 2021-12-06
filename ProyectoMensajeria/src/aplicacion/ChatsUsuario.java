@@ -181,6 +181,10 @@ public class ChatsUsuario
 							info.setVisible(true);
 							System.out.println("cositas");
 						}
+						else
+						{
+							System.out.println("yeee");
+						}
 					}
 				});
 					

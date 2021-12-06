@@ -39,6 +39,28 @@ public class AnyadirAmigo
 		}
 	}
 	
+	public void insertarChat(int id_u, int id_u2)
+	{
+		try
+		{			
+			if (cn != null)
+			{
+				PreparedStatement pst = cn.prepareStatement("BEGIN;INSERT INTO chat VALUES (DEFAULT); INSERT INTO conversacion (id_chat, id_usu1, id_usu2) SELECT currval('chat_id_chat_seq'), ?,?; END;");
+				pst.setInt(1, id_u);
+				pst.setInt(2, id_u2);
+                pst.executeUpdate();
+			}
+			else
+			{
+				System.out.println("Conexión nula.");
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println("Error SQL (insertarChat)");
+		}
+	}
 	
 	public void rellenarBox(JComboBox<String> box)
 	{

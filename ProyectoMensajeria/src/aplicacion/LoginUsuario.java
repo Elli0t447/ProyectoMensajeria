@@ -52,6 +52,7 @@ public class LoginUsuario
 		
 	}
 	
+	// Devolver nombre usuario por id usuario
 	public static String nombreUserPorId(int id_u)
 	{
 	    ResultSet rs = null;
@@ -76,6 +77,8 @@ public class LoginUsuario
 		return nombreResult;
 	}
 	
+	
+	// Devolver id usuario por nombre usuario
 	public static int idUserPorNombre(String nom_u)
 	{
 	    ResultSet rs = null;

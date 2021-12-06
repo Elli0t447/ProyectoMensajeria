@@ -28,8 +28,6 @@ public class MensajesChat
 	
 	private MensajesChat mcc;
 	
-	public static int getPositionUI() { return positionUI; }
-	
 	public void cargarChat(int id_c, JPanel parent)
 	{
 		PrincipalUI.tab_noChat.setVisible(false);
@@ -125,16 +123,18 @@ public class MensajesChat
 					public void mouseEntered(MouseEvent e) 
 					{
 						msjPanel.setBackground(new Color(245, 245, 245));
-												
+						
 						if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == false && PrincipalUI.getCurrentAdministra() == true)
 						{
-							miniMenu.setVisible(true);
+							
 							if (LoginUsuario.getIdUsuario() == usuario)
-							{
+							{	
+								miniMenu.setVisible(true);
 								iconEditar.setVisible(true);							
 							}
 							else
 							{
+								miniMenu.setVisible(true);
 								miniMenu.setBounds(525, -2, 30, 25);
 								iconBorrar.setBounds(5,-3,30,30);
 								iconEditar.setVisible(false);
@@ -259,8 +259,10 @@ public class MensajesChat
 					@Override
 					public void mouseEntered(MouseEvent e) 
 					{
+						
 						msjPanel.setBackground(new Color(245, 245, 245));
 												
+						// Es admin de un grupo
 						if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == false && PrincipalUI.getCurrentAdministra() == true)
 						{
 							miniMenu.setVisible(true);
@@ -275,6 +277,7 @@ public class MensajesChat
 								iconEditar.setVisible(false);
 							}
 						}
+						// No es admin de un grupo
 						else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == false && PrincipalUI.getCurrentAdministra() == false)
 						{
 							if (LoginUsuario.getIdUsuario() == usuario)
@@ -286,7 +289,8 @@ public class MensajesChat
 								miniMenu.setVisible(false);
 							}
 						}
-						else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == true)
+						// Si es una conversación
+						else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == true && PrincipalUI.getCurrentAdministra() == false)
 						{
 							if (LoginUsuario.getIdUsuario() == usuario)
 							{
@@ -295,6 +299,7 @@ public class MensajesChat
 							else
 							{
 								miniMenu.setVisible(false);
+								iconEditar.setVisible(false);
 							}
 						}
 					}
@@ -341,7 +346,7 @@ public class MensajesChat
 				});
 			}
 			
-			PrincipalUI.scrollMensaje.getViewport().setViewPosition(new Point(1, MensajesChat.getPositionUI()));
+			PrincipalUI.scrollMensaje.getViewport().setViewPosition(new Point(1, positionUI));
 			parent.setPreferredSize(new Dimension(560, positionUI));
 			parent.revalidate();
 			parent.repaint();

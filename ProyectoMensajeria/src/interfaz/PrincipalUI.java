@@ -8,6 +8,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JButton;
@@ -20,6 +22,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.border.MatteBorder;
 
+import aplicacion.AjustesUsuario;
 import aplicacion.AmigosUsuario;
 import aplicacion.ChatsUsuario;
 import aplicacion.LoginUsuario;
@@ -38,7 +41,7 @@ public class PrincipalUI extends JFrame
 	public static JPanel tab_noChat;
 	public static JLabel descripcionChat;
 	private JPanel barChat;
-	private JPanel container;
+	public static JPanel container;
 	
 	private JLabel nochatLabel;
 	private JLabel noChatDesc;
@@ -58,14 +61,14 @@ public class PrincipalUI extends JFrame
 	public static JPanel tab_amigos;
 	private JLabel lblAmigos;
 	private JLabel lblAjustes_1;
-	private JLabel usuarioLabelAjustes;
+	public static JLabel usuarioLabelAjustes;
 	private JLabel lblNombre;
 	private JPanel panelito;
 	private JLabel descrip;
 	private JLabel lblContrasea;
-	private JTextField nombreField;
-	private JTextField passwordField;
-	private JLabel iDlabel;
+	public static JTextField nombreField;
+	public static JTextField passwordField;
+	public static JLabel iDlabel;
 	private JButton aplicarCambios;
 	public static JLabel descAmigo;
 	public static JLabel descPeti;
@@ -73,6 +76,7 @@ public class PrincipalUI extends JFrame
 	public static JPanel peticionesContainer;
 	
 	public static AmigosUsuario amics;
+	private static AjustesUsuario ajustesUsu;
 	public static JPanel bg_chat;
 	
 	public static void setCurrentChatTitulo(String c) { currentChatTitulo = c;}
@@ -93,12 +97,13 @@ public class PrincipalUI extends JFrame
 	public PrincipalUI() 
 	{
 		mC = new MensajesChat();
+		ajustesUsu = new AjustesUsuario();
 		
 		setResizable(false);
 		setTitle("Mensajería @" + LoginUI.login.getUsuario());
 		try 
 		{
-			 // Definir icono del ejecutable
+			 // Definir icono de la aplicación
 		     ImageIcon programIcon = new ImageIcon(PrincipalUI.class.getResource("/img/chat.png"));
 		     setIconImage(programIcon.getImage());
 		 }
@@ -115,18 +120,148 @@ public class PrincipalUI extends JFrame
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JPanel tab_ajustes = new JPanel();
-		tab_ajustes.setBackground(Color.WHITE);
-		tab_ajustes.setVisible(false);
-		
 		tab_amigos = new JPanel();
 		tab_amigos.setVisible(false);
 		
 		tab_chat = new JPanel();
 		tab_chat.setVisible(false);
+		
+		JPanel tab_ajustes = new JPanel();
+		tab_ajustes.setBackground(Color.WHITE);
+		tab_ajustes.setVisible(false);
+		tab_ajustes.setBounds(65, 0, 791, 489);
+		contentPane.add(tab_ajustes);
+		tab_ajustes.setLayout(null);
+		
+		usuarioLabelAjustes = new JLabel("USUARIO");
+		usuarioLabelAjustes.setForeground(new Color(65, 105, 225));
+		usuarioLabelAjustes.setFont(new Font("Segoe UI", Font.BOLD, 35));
+		usuarioLabelAjustes.setBounds(191, 10, 221, 47);
+		tab_ajustes.add(usuarioLabelAjustes);
+		
+		lblNombre = new JLabel("Nombre:");
+		lblNombre.setForeground(new Color(0, 0, 0));
+		lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 16));
+		lblNombre.setBounds(230, 88, 66, 32);
+		tab_ajustes.add(lblNombre);
+		
+		panelito = new JPanel();
+		panelito.setBackground(new Color(255, 250, 250));
+		panelito.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(227, 227, 227)));
+		panelito.setBounds(0, 0, 181, 489);
+		tab_ajustes.add(panelito);
+		panelito.setLayout(null);
+		
+		lblAjustes_1 = new JLabel("Ajustes");
+		lblAjustes_1.setBounds(16, 10, 80, 34);
+		panelito.add(lblAjustes_1);
+		lblAjustes_1.setFont(new Font("Segoe UI", Font.BOLD, 19));
+		lblAjustes_1.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
+		
+		descrip = new JLabel("<html>Cambia los ajustes de tu usuario</html>");
+		descrip.setForeground(Color.DARK_GRAY);
+		descrip.setBounds(16, 52, 103, 45);
+		panelito.add(descrip);
+		descrip.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		
+		lblContrasea = new JLabel("Contrase\u00F1a:");
+		lblContrasea.setForeground(Color.BLACK);
+		lblContrasea.setFont(new Font("Segoe UI", Font.BOLD, 16));
+		lblContrasea.setBounds(215, 134, 94, 47);
+		tab_ajustes.add(lblContrasea);
+		
+		nombreField = new JTextField();
+		nombreField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		nombreField.setBounds(319, 96, 420, 24);
+		tab_ajustes.add(nombreField);
+		nombreField.setColumns(10);
+		
+		passwordField = new JPasswordField();
+		passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		passwordField.setColumns(10);
+		passwordField.setBounds(319, 149, 420, 24);
+		tab_ajustes.add(passwordField);
+		
+		aplicarCambios = new JButton("Aplicar cambios");
+		aplicarCambios.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+				/*
+				 * Busca y introduce todos los usuarios en la variable "rs" para comprobar si el cambio de nombre
+				 * no cumple la restricción de integridad 'UNICO NOMBRE'.
+				 * 
+				 * No dejara cambiar el nombre al usuario si ya existe uno así.
+				 * */
+				
+				ResultSet rs = LoginUsuario.allNomUsuarios();
+
+				try 
+				{
+					while(rs.next())
+					{
+						if (!nombreField.getText().equals(rs.getString("nombre")) || nombreField.getText().equals(LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuario())))
+						{
+							ajustesUsu.actualizarUsuario(nombreField.getText(), passwordField.getText(), LoginUsuario.getIdUsuario());
+							usuarioLabelAjustes.setText(nombreField.getText());
+						}
+						else
+						{
+							System.out.println("Error nombre de usuario ya existente!!");
+						}
+					}
+					
+					System.out.println("Usuario actualizado!");
+				} 
+				catch (SQLException e1) 
+				{
+					System.out.println("Error de SQL");
+					e1.printStackTrace();
+				}
+			}
+		});
+		aplicarCambios.setBorderPainted(false);
+		aplicarCambios.setBackground(new Color(65, 105, 225));
+		aplicarCambios.setForeground(Color.WHITE);
+		aplicarCambios.setFont(new Font("Segoe UI", Font.BOLD, 16));
+		aplicarCambios.setBounds(211, 202, 153, 47);
+		tab_ajustes.add(aplicarCambios);
+		
+		iDlabel = new JLabel("(ID 1)");
+		iDlabel.setForeground(Color.DARK_GRAY);
+		iDlabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		iDlabel.setBounds(201, 53, 47, 24);
+		tab_ajustes.add(iDlabel);
+		
+		JButton borrarUsuario = new JButton("BORRAR USUARIO");
+		borrarUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+				int opcion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de querer borrar tu usario? (esta acción no se puede deshacer)", "ATENCIÓN", JOptionPane.YES_NO_OPTION);
+				
+				if (opcion == 0)
+				{
+					ajustesUsu.borrarUsuario(LoginUsuario.getIdUsuario());
+					dispose();
+					new LoginUI().setVisible(true);
+				}
+				else
+				{
+					System.out.println("Usuario no borrado");
+				}
+				
+			}
+		});
+		borrarUsuario.setBorderPainted(false);
+		borrarUsuario.setBackground(Color.RED);
+		borrarUsuario.setForeground(Color.WHITE);
+		borrarUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		borrarUsuario.setBounds(633, 443, 143, 32);
+		tab_ajustes.add(borrarUsuario);
 		tab_chat.setBorder(null);
 		tab_chat.setBackground(Color.WHITE);
-		tab_chat.setBounds(248, 0, 608, 489);
+		tab_chat.setBounds(251, 0, 608, 489);
 		contentPane.add(tab_chat);
 		tab_chat.setLayout(null);
 		
@@ -242,101 +377,31 @@ public class PrincipalUI extends JFrame
 		newAmigo.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/anyadir_blue.png")));
 		newAmigo.setBounds(97, 19, 43, 21);
 		tab_amigos.add(newAmigo);
-		tab_ajustes.setBounds(65, 0, 791, 489);
-		contentPane.add(tab_ajustes);
-		tab_ajustes.setLayout(null);
 		
-		usuarioLabelAjustes = new JLabel("USUARIO");
-		usuarioLabelAjustes.setForeground(new Color(65, 105, 225));
-		usuarioLabelAjustes.setFont(new Font("Segoe UI", Font.BOLD, 35));
-		usuarioLabelAjustes.setBounds(191, 10, 221, 47);
-		tab_ajustes.add(usuarioLabelAjustes);
-		
-		lblNombre = new JLabel("Nombre:");
-		lblNombre.setForeground(new Color(0, 0, 0));
-		lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		lblNombre.setBounds(230, 88, 66, 32);
-		tab_ajustes.add(lblNombre);
-		
-		panelito = new JPanel();
-		panelito.setBackground(new Color(255, 250, 250));
-		panelito.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(227, 227, 227)));
-		panelito.setBounds(0, 0, 181, 489);
-		tab_ajustes.add(panelito);
-		panelito.setLayout(null);
-		
-		lblAjustes_1 = new JLabel("Ajustes");
-		lblAjustes_1.setBounds(16, 10, 80, 34);
-		panelito.add(lblAjustes_1);
-		lblAjustes_1.setFont(new Font("Segoe UI", Font.BOLD, 19));
-		lblAjustes_1.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
-		
-		descrip = new JLabel("<html>Cambia los ajustes de tu usuario</html>");
-		descrip.setForeground(Color.DARK_GRAY);
-		descrip.setBounds(16, 52, 103, 45);
-		panelito.add(descrip);
-		descrip.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
-		lblContrasea = new JLabel("Contrase\u00F1a:");
-		lblContrasea.setForeground(Color.BLACK);
-		lblContrasea.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		lblContrasea.setBounds(215, 134, 94, 47);
-		tab_ajustes.add(lblContrasea);
-		
-		nombreField = new JTextField();
-		nombreField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		nombreField.setBounds(319, 96, 420, 24);
-		tab_ajustes.add(nombreField);
-		nombreField.setColumns(10);
-		
-		passwordField = new JPasswordField();
-		passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		passwordField.setColumns(10);
-		passwordField.setBounds(319, 149, 420, 24);
-		tab_ajustes.add(passwordField);
-		
-		aplicarCambios = new JButton("Aplicar cambios");
-		aplicarCambios.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) 
-			{
-				ResultSet r = LoginUsuario.allNomUsuarios();
-
-				try 
-				{
-					while(r.next())
-					{
-						if (!nombreField.getText().equals(r.getString("nombre")) || nombreField.getText().equals(LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuario())))
-						{
-							actualizarUsuario(nombreField.getText(), passwordField.getText(), LoginUsuario.getIdUsuario());
-							usuarioLabelAjustes.setText(nombreField.getText());
-						}
-						else
-						{
-							System.out.println("Error nombre de usuario ya existente!!");
-						}
-					}
+		JTextField escribirTexto = new JTextField();
+		escribirTexto.setBounds(10, 438, 588, 36);
+		PrincipalUI.tab_chat.add(escribirTexto);
+		escribirTexto.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(65, 105, 225)));
+		escribirTexto.setForeground(new Color(128, 128, 128));
+		escribirTexto.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		escribirTexto.setColumns(10);
 					
-					System.out.println("Usuario actualizado!");
-				} 
-				catch (SQLException e1) 
+		escribirTexto.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{	
+				if (!escribirTexto.getText().equals(""))
+				{	
+					mC.enviarMensaje(chatEnvio, LoginUsuario.getIdUsuario(), escribirTexto.getText());
+					mC.cargarChat(chatEnvio, PrincipalUI.containerMsj);	
+					escribirTexto.setText("");
+				}
+				else
 				{
-					System.out.println("Error de SQL");
-					e1.printStackTrace();
+					System.out.println("Escribe algo aunque sea mamoooon");
 				}
 			}
 		});
-		aplicarCambios.setBorderPainted(false);
-		aplicarCambios.setBackground(new Color(65, 105, 225));
-		aplicarCambios.setForeground(Color.WHITE);
-		aplicarCambios.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		aplicarCambios.setBounds(211, 202, 153, 47);
-		tab_ajustes.add(aplicarCambios);
-		
-		iDlabel = new JLabel("(ID 1)");
-		iDlabel.setForeground(Color.DARK_GRAY);
-		iDlabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-		iDlabel.setBounds(201, 53, 47, 24);
-		tab_ajustes.add(iDlabel);
 		
 		JPanel toolbar = new JPanel();
 		toolbar.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(227, 227, 227)));
@@ -384,7 +449,7 @@ public class PrincipalUI extends JFrame
 		scrollChat.setBorder(new MatteBorder(0, 0, 0, 1, (Color) new Color(227, 227, 227)));
 		scrollChat.getVerticalScrollBar().setUnitIncrement(7);
 		
-		nochatLabel = new JLabel("No tienes ningun chat :(");
+		nochatLabel = new JLabel("No tienes ningún chat :(");
 		nochatLabel.setBorder(null);
 		nochatLabel.setBounds(10, 10, 149, 34);
 		barChat.add(nochatLabel);
@@ -394,7 +459,7 @@ public class PrincipalUI extends JFrame
 		
 		noChatDesc = new JLabel("<html>Añade a un usuario como amigo o crea un grupo para empezar a conversar </html>");
 		noChatDesc.setBounds(10, 40, 124, 58);
-		container.add(noChatDesc);
+		barChat.add(noChatDesc);
 		noChatDesc.setVerticalAlignment(SwingConstants.TOP);
 		noChatDesc.setForeground(Color.GRAY);
 		noChatDesc.setHorizontalAlignment(SwingConstants.CENTER);
@@ -433,10 +498,28 @@ public class PrincipalUI extends JFrame
 		chats.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
+				container.removeAll();
+				
+				chatsU = new ChatsUsuario(mC);
+				if (chatsU.mostrarListaChats(container))
+				{
+					container.setVisible(true);
+					nochatLabel.setVisible(false);
+					noChatDesc.setVisible(false);
+				}	
+				else
+				{
+					container.setVisible(true);
+					nochatLabel.setVisible(true);
+					noChatDesc.setVisible(true);
+				}
 				tab_amigos.setVisible(false);
 				tab_noChat.setVisible(true);
 				tab_ajustes.setVisible(false);
 				barChat.setVisible(true);
+				
+				toolbar.repaint();
+				toolbar.revalidate();
 			}
 		});
 		chats.setFocusPainted(false);
@@ -453,8 +536,9 @@ public class PrincipalUI extends JFrame
 				tab_ajustes.setVisible(true);
 				tab_noChat.setVisible(false);
 				tab_chat.setVisible(false);
-				barChat.setVisible(false);
+				barChat.setVisible(false);		
 				tab_amigos.setVisible(false);
+				
 				contentPane.revalidate();
 				contentPane.repaint();
 			}
@@ -479,31 +563,6 @@ public class PrincipalUI extends JFrame
 		tituloChats.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
 		tituloChats.setBounds(76, 8, 72, 34);
 		toolbar.add(tituloChats);
-		
-		JTextField escribirTexto = new JTextField();
-		escribirTexto.setBounds(10, 438, 588, 36);
-		PrincipalUI.tab_chat.add(escribirTexto);
-		escribirTexto.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(65, 105, 225)));
-		escribirTexto.setForeground(new Color(128, 128, 128));
-		escribirTexto.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		escribirTexto.setColumns(10);
-					
-		escribirTexto.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e) 
-			{	
-				if (!escribirTexto.getText().equals(""))
-				{	
-					mC.enviarMensaje(chatEnvio, LoginUsuario.getIdUsuario(), escribirTexto.getText());
-					mC.cargarChat(chatEnvio, PrincipalUI.containerMsj);	
-					escribirTexto.setText("");
-				}
-				else
-				{
-					System.out.println("Escribe algo aunque sea mamoooon");
-				}
-			}
-		});
 		
 		tab_noChat = new JPanel();
 		tab_noChat.setBorder(null);
@@ -532,7 +591,8 @@ public class PrincipalUI extends JFrame
 		tab_noChat.add(icon);
 		
 		init();
-		datosAjustes();
+		ajustesUsu.datosAjustes();
+		
 	}
 	
 	private void init()
@@ -549,47 +609,11 @@ public class PrincipalUI extends JFrame
 			container.setVisible(true);
 			nochatLabel.setVisible(true);
 			noChatDesc.setVisible(true);
-			container.add(nochatLabel);
-			container.add(noChatDesc);
+			
 		}
-		
-		container.revalidate();
-		container.repaint();
+				
 		scrollChat.revalidate();
 		scrollChat.repaint();
-	}
-	
-	private void datosAjustes()
-	{
-		String nomUsu = LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuario());
-		usuarioLabelAjustes.setText(nomUsu);
-		iDlabel.setText("(ID " + LoginUsuario.getIdUsuario() + ")");
-		nombreField.setText(nomUsu);
-		passwordField.setText(LoginUsuario.getContraseña());
-	}
-	
-	private void actualizarUsuario(String nom_usu, String pass, int id_usu)
-	{
-		Connection cn = LoginUsuario.getConexion();
-		
-		try
-		{			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("UPDATE usuario SET nombre = ?, contra = ? WHERE id_usuario = ?");
-				pst.setString(1, nom_usu);
-				pst.setString(2, pass);
-				pst.setInt(3, id_usu);
-                pst.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
-		}
-		catch (SQLException e)
-		{
-			System.out.println("Usuario con el mismo nombre ya existe (actualizarUsuario)");
-		}
+
 	}
 }
