@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 
-import aplicacion.NuevoGrupo;
+import dialogos.CrearGrupo;
 
 
 public class CrearGrupoUI extends JDialog 
@@ -25,7 +25,7 @@ public class CrearGrupoUI extends JDialog
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	
-	private NuevoGrupo newGrp;
+	private CrearGrupo newGrp;
 	private JPanel participantes;
 	private JScrollPane scroll;
 
@@ -36,7 +36,7 @@ public class CrearGrupoUI extends JDialog
 	public CrearGrupoUI() 
 	{
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		newGrp = new NuevoGrupo();
+		newGrp = new CrearGrupo();
 		
 		setTitle("Nuevo chat");
 		setBounds(100, 100, 466, 485);

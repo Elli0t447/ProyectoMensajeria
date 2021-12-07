@@ -1,9 +1,11 @@
-package aplicacion;
+package dialogos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import aplicacion.Conexion;
+import aplicacion.LoginUsuario;
 import interfaz.PrincipalUI;
 
 public class AjustesUsuario 
@@ -27,8 +29,6 @@ public class AjustesUsuario
 	
 	public void actualizarUsuario(String nom_usu, String pass, int id_usu)
 	{
-		cn = LoginUsuario.getConexion();
-		
 		try
 		{			
 			if (cn != null)
@@ -51,9 +51,7 @@ public class AjustesUsuario
 	}
 	
 	public void borrarUsuario(int id_usu)
-	{
-		cn = LoginUsuario.getConexion();
-		
+	{	
 		try
 		{			
 			if (cn != null)

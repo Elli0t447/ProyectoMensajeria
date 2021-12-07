@@ -20,11 +20,11 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.border.MatteBorder;
 
-import aplicacion.AjustesUsuario;
 import aplicacion.AmigosUsuario;
 import aplicacion.ChatsUsuario;
 import aplicacion.LoginUsuario;
 import aplicacion.MensajesChat;
+import dialogos.AjustesUsuario;
 
 import javax.swing.SwingConstants;
 
@@ -76,6 +76,9 @@ public class PrincipalUI extends JFrame
 	public static AmigosUsuario amics;
 	private static AjustesUsuario ajustesUsu;
 	public static JPanel bg_chat;
+	public static JPanel chatOption;
+	private JLabel lblNewLabel;
+	private JLabel lblNewLabel_1;
 	
 	public static void setCurrentChatTitulo(String c) { currentChatTitulo = c;}
 	public static void setCurrentChatDesc(String d) { currentChatDesc = d;}
@@ -121,12 +124,66 @@ public class PrincipalUI extends JFrame
 		tab_amigos = new JPanel();
 		tab_amigos.setVisible(false);
 		
-		tab_chat = new JPanel();
-		tab_chat.setVisible(false);
-		
 		JPanel tab_ajustes = new JPanel();
 		tab_ajustes.setBackground(Color.WHITE);
 		tab_ajustes.setVisible(false);
+		
+		tab_chat = new JPanel();
+		tab_chat.setVisible(false);
+		tab_chat.setBorder(null);
+		tab_chat.setBackground(Color.WHITE);
+		tab_chat.setBounds(251, 0, 608, 489);
+		contentPane.add(tab_chat);
+		tab_chat.setLayout(null);
+		
+		bg_chat = new JPanel();
+		bg_chat.setBackground(new Color(65, 105, 225));
+		bg_chat.setBounds(0, 0, 652, 60);
+		tab_chat.add(bg_chat);
+		bg_chat.setLayout(null);
+		
+		descripcionChat = new JLabel("descripcionChat");
+		descripcionChat.setBounds(10, 30, (int)descripcionChat.getPreferredSize().getWidth() + 10, 21);
+		bg_chat.add(descripcionChat);
+		descripcionChat.setForeground(new Color(211, 211, 211));
+		descripcionChat.setFont(new Font("Segoe UI", Font.BOLD, 15));
+		
+		nombreChat = new JLabel("id_chat / nombrechat");
+		nombreChat.setBounds(10, 4, (int)nombreChat.getPreferredSize().getWidth() + 10, 33);
+		bg_chat.add(nombreChat);
+		nombreChat.setForeground(new Color(255, 255, 255));
+		nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		
+		chatOption = new JPanel();
+		chatOption.setBackground(new Color(65, 105, 225));
+		chatOption.setBounds(380, 4, 215, 47);
+		bg_chat.add(chatOption);
+		chatOption.setLayout(null);
+		
+		lblNewLabel_1 = new JLabel("");
+		lblNewLabel_1.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/info.png")));
+		lblNewLabel_1.setBounds(157, 8, 39, 37);
+		chatOption.add(lblNewLabel_1);
+		
+		lblNewLabel = new JLabel("Amigos desde: 2021/06/05");
+		lblNewLabel.setForeground(Color.WHITE);
+		lblNewLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		lblNewLabel.setBounds(10, 10, 201, 27);
+		chatOption.add(lblNewLabel);
+		
+		containerMsj = new JPanel();
+		containerMsj.setBorder(null);
+		containerMsj.setBackground(Color.WHITE);
+		containerMsj.setBounds(12, 64, 586, 356);
+		containerMsj.setLayout(null);
+		
+		scrollMensaje = new JScrollPane();
+		scrollMensaje.setBounds(10, 60, 588, 368);
+		scrollMensaje.getVerticalScrollBar().setUnitIncrement(7);
+		scrollMensaje.setBorder(null);
+		scrollMensaje.setViewportBorder(null);
+		scrollMensaje.setViewportView(containerMsj);
+		tab_chat.add(scrollMensaje);
 		tab_ajustes.setBounds(65, 0, 791, 489);
 		contentPane.add(tab_ajustes);
 		tab_ajustes.setLayout(null);
@@ -236,7 +293,7 @@ public class PrincipalUI extends JFrame
 			public void actionPerformed(ActionEvent e) 
 			{
 				
-				int opcion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de querer borrar tu usario? (esta acción no se puede deshacer)", "ATENCIÓN", JOptionPane.YES_NO_OPTION);
+				int opcion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de querer borrar tu usuario? (esta acción no se puede deshacer)", "ATENCIÓN", JOptionPane.YES_NO_OPTION);
 				
 				if (opcion == 0)
 				{
@@ -257,43 +314,6 @@ public class PrincipalUI extends JFrame
 		borrarUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		borrarUsuario.setBounds(633, 443, 143, 32);
 		tab_ajustes.add(borrarUsuario);
-		tab_chat.setBorder(null);
-		tab_chat.setBackground(Color.WHITE);
-		tab_chat.setBounds(251, 0, 608, 489);
-		contentPane.add(tab_chat);
-		tab_chat.setLayout(null);
-		
-		bg_chat = new JPanel();
-		bg_chat.setBackground(new Color(65, 105, 225));
-		bg_chat.setBounds(0, 0, 652, 60);
-		tab_chat.add(bg_chat);
-		bg_chat.setLayout(null);
-		
-		descripcionChat = new JLabel("descripcionChat");
-		descripcionChat.setBounds(10, 30, (int)descripcionChat.getPreferredSize().getWidth() + 10, 21);
-		bg_chat.add(descripcionChat);
-		descripcionChat.setForeground(new Color(211, 211, 211));
-		descripcionChat.setFont(new Font("Segoe UI", Font.BOLD, 15));
-		
-		nombreChat = new JLabel("id_chat / nombrechat");
-		nombreChat.setBounds(10, 4, (int)nombreChat.getPreferredSize().getWidth() + 10, 33);
-		bg_chat.add(nombreChat);
-		nombreChat.setForeground(new Color(255, 255, 255));
-		nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		
-		containerMsj = new JPanel();
-		containerMsj.setBorder(null);
-		containerMsj.setBackground(Color.WHITE);
-		containerMsj.setBounds(12, 64, 586, 356);
-		containerMsj.setLayout(null);
-		
-		scrollMensaje = new JScrollPane();
-		scrollMensaje.setBounds(10, 60, 588, 368);
-		scrollMensaje.getVerticalScrollBar().setUnitIncrement(7);
-		scrollMensaje.setBorder(null);
-		scrollMensaje.setViewportBorder(null);
-		scrollMensaje.setViewportView(containerMsj);
-		tab_chat.add(scrollMensaje);
 		tab_amigos.setLayout(null);
 		tab_amigos.setBorder(null);
 		tab_amigos.setBackground(new Color(245, 245, 245));

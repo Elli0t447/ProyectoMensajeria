@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 
-import interfaz.InfoGruposUI;
+import interfaz.InfoGrupoUI;
 import interfaz.PrincipalUI;
 
 public class ChatsUsuario 
@@ -27,10 +27,12 @@ public class ChatsUsuario
 	private static int positionUI;
 	
 	private MensajesChat mC;
+	private Connection cn;
 	
 	public ChatsUsuario(MensajesChat constructor)
 	{
 		mC = constructor;
+		cn = Conexion.Conectar();
 	}
 	
 	public boolean mostrarListaChats(JPanel padre)
@@ -42,6 +44,8 @@ public class ChatsUsuario
 		positionUI = 20;
 		int incremento = 60;
 		
+		int usuarioContrario = 0;
+		
 		try 
 		{
 			while (rsConver.next())
@@ -50,20 +54,17 @@ public class ChatsUsuario
 				int idUser1 = rsConver.getInt("id_usu1");
 				int idUser2 = rsConver.getInt("id_usu2");
 				
-				int usuarioFinal;
-				
-				
 				// Lógica para determinar el usuario que tiene que mostrar en la conversacion 
 				if (idUser1 != LoginUsuario.getIdUsuario())
 				{
-					usuarioFinal = idUser1;				
+					usuarioContrario = idUser1;				
 				}
 				else
 				{
-					usuarioFinal = idUser2;
+					usuarioContrario = idUser2;
 				}
 				
-				nomChat =  "Chat con " + LoginUsuario.nombreUserPorId(usuarioFinal);
+				nomChat =  "Chat con " + LoginUsuario.nombreUserPorId(usuarioContrario);
 				
 				// Creacion del elemento de la interfaz que contiene la conversacion
 				JPanel panelChat = new JPanel();				
@@ -78,6 +79,7 @@ public class ChatsUsuario
 				
 				String nomIndividual = nomChat;
 				int idIndividual = idChat;
+				int usuarioFinal = usuarioContrario;
 				
 				JButton nombreChat = new JButton(nomChat);
 				nombreChat.setBounds(-5,0,151,35);
@@ -100,7 +102,7 @@ public class ChatsUsuario
 						PrincipalUI.containerMsj.removeAll();
 						PrincipalUI.setChatEnvio(idIndividual);
 						mC.cargarChat(idIndividual, PrincipalUI.containerMsj);	
-						
+						mostrarOpcionChat(usuarioFinal);
 					}
 				});
 				panelChat.add(nombreChat);
@@ -129,6 +131,7 @@ public class ChatsUsuario
 				String nomIndividual = nomChat;
 				int idIndividual = idChat;
 				boolean admin = administrador;
+				int usuarioFinal = usuarioContrario;
 				
 				JLabel descripcionChatIndividual = new JLabel(descripcion);
 				descripcionChatIndividual.setBounds(10,25,146,20);
@@ -158,35 +161,12 @@ public class ChatsUsuario
 						PrincipalUI.setChatEnvio(idIndividual);
 						PrincipalUI.setCurrentAdministra(admin);
 						mC.cargarChat(idIndividual, PrincipalUI.containerMsj);	
+						mostrarOpcionChat(usuarioFinal);
 					}
 				});
 				panelChat.add(nombreChat);	
 				panelChat.revalidate();
 				panelChat.repaint();
-							
-				// Si es un grupo
-				
-				JLabel infoChat = new JLabel();
-				infoChat.setBounds(559, 10, 33, 36);
-				infoChat.setIcon(new ImageIcon(ChatsUsuario.class.getResource("/img/info.png")));
-				PrincipalUI.bg_chat.add(infoChat);
-				infoChat.addMouseListener(new MouseAdapter()
-				{
-					@Override
-					public void mouseClicked(MouseEvent e)
-					{
-						if (!isConver(PrincipalUI.getCurrentChat()))
-						{
-							InfoGruposUI info = new InfoGruposUI();
-							info.setVisible(true);
-							System.out.println("cositas");
-						}
-						else
-						{
-							System.out.println("yeee");
-						}
-					}
-				});
 					
 				countChats++;
 			}
@@ -254,24 +234,103 @@ public class ChatsUsuario
 	
 		return rs;
 	}
+	
+	private void mostrarOpcionChat(int id_usu)
+	{
+		// Si es un grupo	
+		if (!PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()))
+		{
+			PrincipalUI.chatOption.removeAll();
+			
+			JLabel infoChat = new JLabel();
+			infoChat.setIcon(new ImageIcon(MensajesChat.class.getResource("/img/info.png")));
+			infoChat.setBounds(157, 8, 39, 37);
+			
+			infoChat.addMouseListener(new MouseAdapter()
+			{
+				@Override
+				public void mouseClicked(MouseEvent e)
+				{
+					InfoGrupoUI info = new InfoGrupoUI();
+					info.setVisible(true);
+				}
+			});
+			PrincipalUI.chatOption.add(infoChat);
+		}
+		// Si es una conversacion
+		else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()))
+		{
+			ResultSet rsAmigos = fechaAmistad(LoginUsuario.getIdUsuario(), id_usu);
+			Date amigosFecha = null;
+			try 
+			{
+				while (rsAmigos.next())
+				{
+					amigosFecha = rsAmigos.getDate("amigodesde");
+				}
+				
+				PrincipalUI.chatOption.removeAll();
+				JLabel amigosDesde = new JLabel("Amigos desde: " + amigosFecha);
+				amigosDesde.setForeground(Color.WHITE);
+				amigosDesde.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+				amigosDesde.setBounds(20, 12, 240, 27);
+				PrincipalUI.chatOption.add(amigosDesde);
+			} 
+			catch (SQLException e) 
+			{
+				
+				e.printStackTrace();
+			}	
+		}
+		
+		PrincipalUI.chatOption.revalidate();
+		PrincipalUI.chatOption.repaint();
+	}
+	
+	private ResultSet fechaAmistad(int id_u1, int id_u2)
+	{
+		ResultSet rs = null;
+		
+		try 
+	    {
+	        PreparedStatement pst = cn.prepareStatement("SELECT amigodesde FROM amistad WHERE (id_usu1 = ? AND id_usu2 = ?) OR (id_usu1 = ? AND id_usu2 = ?)");
+	        pst.setInt(1, id_u1);
+	        pst.setInt(2, id_u2);
+	        pst.setInt(3, id_u2);
+	        pst.setInt(4, id_u1);
+	        rs = pst.executeQuery();	        
+	    } 
+	    catch (SQLException ex) 
+	    {
+	        System.out.println("Error al seleccionar datos");
+	    }
+		
+		return rs;	
+	}
 
 	public boolean isConver(int id_c)
 	{
 		ResultSet conversaciones = conversUser();
+		boolean found = false;
 		
 		try 
 		{
 			while (conversaciones.next())
 			{
 				int idEncontrada = conversaciones.getInt("id_chat");
-				if (id_c == idEncontrada)
+				if (idEncontrada == id_c)
 				{
-					return true;
+					found = true;
 				}
-				else
-				{
-					return false;
-				}
+			}
+			
+			if (found)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		} 
 		catch (SQLException e) 

@@ -1,4 +1,4 @@
-package aplicacion;
+package dialogos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JComboBox;
+
+import aplicacion.Conexion;
+import aplicacion.LoginUsuario;
 
 public class AnyadirAmigo 
 {

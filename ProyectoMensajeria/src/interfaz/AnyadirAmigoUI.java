@@ -1,15 +1,14 @@
 package interfaz;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import aplicacion.AnyadirAmigo;
 import aplicacion.LoginUsuario;
+import dialogos.AnyadirAmigo;
 
 import java.awt.Color;
 import javax.swing.JComboBox;
@@ -20,24 +19,21 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
-import java.awt.Dialog.ModalityType;
 
 public class AnyadirAmigoUI extends JDialog 
 {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-	private JComboBox noAmigosBox;
+	private JComboBox<String> noAmigosBox;
 	
 	private AnyadirAmigo add;
-	
-	public JComboBox getNoAmigosBox() { return noAmigosBox; }
 
 	/**
 	 * Create the dialog.
 	 */
 	public AnyadirAmigoUI() {
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setTitle("A\u00F1adir amigo");
+		setTitle("A\u00F1adir");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(AnyadirAmigoUI.class.getResource("/img/anyadir.png")));
 		setBounds(100, 100, 371, 257);
 		getContentPane().setLayout(new BorderLayout());
@@ -51,14 +47,14 @@ public class AnyadirAmigoUI extends JDialog
 			contentPanel.add(panel);
 			panel.setLayout(null);
 			
-			JLabel lblNewLabel_1 = new JLabel("A\u00F1adir usuario");
+			JLabel lblNewLabel_1 = new JLabel("A\u00F1adir amigo");
 			lblNewLabel_1.setForeground(new Color(255, 255, 255));
 			lblNewLabel_1.setFont(new Font("Segoe UI", Font.BOLD, 15));
 			lblNewLabel_1.setBounds(129, 7, 125, 34);
 			panel.add(lblNewLabel_1);
 		}
 		
-		noAmigosBox = new JComboBox();
+		noAmigosBox = new JComboBox<String>();
 		noAmigosBox.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		noAmigosBox.setRequestFocusEnabled(false);
 		noAmigosBox.setBounds(128, 91, 152, 21);

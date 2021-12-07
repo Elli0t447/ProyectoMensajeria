@@ -1,4 +1,4 @@
-package aplicacion;
+package dialogos;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,12 +11,16 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class NuevoGrupo 
+import aplicacion.AmigosUsuario;
+import aplicacion.Conexion;
+import aplicacion.LoginUsuario;
+
+public class CrearGrupo 
 {
-	private Connection cn;
+	private static Connection cn;
 	private ArrayList<Integer> participantes = new ArrayList<>();
 	
-	public NuevoGrupo()
+	public CrearGrupo()
 	{
 		cn = Conexion.Conectar();
 	}
@@ -71,12 +75,14 @@ public class NuevoGrupo
 						
 						if (panelAmigo.getBackground().equals(new Color(255, 250, 250)))
 						{
-							panelAmigo.setBackground(new Color(230, 230, 250));
+							panelAmigo.setBackground(new Color(65, 105, 205));
+							nomAmigo.setForeground(Color.WHITE);
 							participantes.add(usuarioFinal);
 						}
 						else
 						{
 							panelAmigo.setBackground(new Color(255, 250, 250));
+							nomAmigo.setForeground(Color.BLACK);
 							for (int i = 0; i < participantes.size(); i++)
 							{
 								if (participantes.get(i) == usuarioFinal)

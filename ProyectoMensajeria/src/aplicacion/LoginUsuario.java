@@ -162,4 +162,46 @@ public class LoginUsuario
 	    
 		return rs;
 	}
+	
+	public static boolean isAdmin(int id_usuario, int id_chat)
+	{	
+		ResultSet rs;
+		boolean admin = false;	
+		
+		try
+		{	
+			if (cn != null)
+			{
+				PreparedStatement pst = cn.prepareStatement("SELECT * FROM participa WHERE id_usuario = ? AND id_chat = ?");
+				pst.setInt(1, id_usuario);
+				pst.setInt(2, id_chat);
+                rs = pst.executeQuery();
+                
+                while (rs.next())
+                {
+                	admin = rs.getBoolean("administra");
+                }
+                
+                if (admin)
+                {
+                	return true;
+                }
+                else
+                {
+                	return false;
+                }
+			}
+			else
+			{
+				System.out.println("Conexión nula.");
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			System.out.println("Error SQL (isAdmin)");
+		}
+		
+		return false;
+	}
 }

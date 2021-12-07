@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import dialogos.AnyadirAmigo;
 import interfaz.PrincipalUI;
 
 import java.awt.Color;
