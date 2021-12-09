@@ -99,7 +99,7 @@ public class InvitarUsuarioUI extends JDialog
 		JLabel lblNewLabel = new JLabel("<html>A\u00F1ade a algunos de tus amigos al grupo</html>");
 		lblNewLabel.setForeground(Color.DARK_GRAY);
 		lblNewLabel.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(65, 105, 225)));
-		lblNewLabel.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+		lblNewLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblNewLabel.setVerticalAlignment(SwingConstants.TOP);
 		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		lblNewLabel.setBounds(309, 103, 118, 44);

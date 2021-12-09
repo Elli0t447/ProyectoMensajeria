@@ -19,9 +19,9 @@ import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
-import javax.swing.border.MatteBorder;
-import javax.swing.ImageIcon;
 
 
 public class InfoGrupoUI extends JDialog 
@@ -34,13 +34,17 @@ public class InfoGrupoUI extends JDialog
 	private InfoGrupo infog;
 	private static JPanel participantes;
 	private JScrollPane scroll;
+	private static JButton adminButton;
+	
+	public static JButton getAdminButton() { return adminButton; }
 	
 	public static JPanel getParticipantesContainer() { return participantes; }
  
 	/**
 	 * Create the dialog.
 	 */
-	public InfoGrupoUI() {
+	public InfoGrupoUI() 
+	{
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(InfoGrupoUI.class.getResource("/img/chat.png")));
 		setTitle("Informaci\u00F3n de " + PrincipalUI.getCurrentChatTitulo());
@@ -52,44 +56,107 @@ public class InfoGrupoUI extends JDialog
 		contentPanel.setLayout(null);
 		
 		JButton salirButton = new JButton("Salir del grupo");
-		salirButton.addActionListener(new ActionListener() {
+		salirButton.addActionListener(new ActionListener() 
+		{
 			public void actionPerformed(ActionEvent e) 
 			{
 				int opcion = JOptionPane.showConfirmDialog(null, "¿Quieres salir del grupo?", "Salir", JOptionPane.YES_NO_OPTION);
 				
-				if (opcion == 0)
+				ResultSet participantes = InfoGrupo.participantesGrupo(PrincipalUI.getCurrentChat());
+				int count_participants = 0;
+				
+				ResultSet admins = InfoGrupo.adminsGrupo(PrincipalUI.getCurrentChat());
+				int count_admins = 0;
+				
+				int id_usuNewAdmin = 0;
+				
+				try 
 				{
-					infog.salirGrupo(PrincipalUI.getCurrentChat(), LoginUsuario.getIdUsuario());
-					dispose();
+					while (participantes.next())
+					{
+						count_participants++;
+						id_usuNewAdmin = participantes.getInt("id_usuario");
+					}
 					
-					// Mostrar de nuevo los chats del usuario
-					PrincipalUI.container.removeAll();
-					PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
-					PrincipalUI.tab_chat.setVisible(false);
-					PrincipalUI.tab_noChat.setVisible(true);
-				}
-				else
+					while (admins.next())
+					{
+						count_admins++;
+						System.out.println("Admin");
+					}
+					
+					// Si hay mas de un participante, solo sale del grupo
+					if (opcion == 0 && count_participants > 1)
+					{
+						if (count_admins > 1)
+						{
+							infog.salirIndividualGrupo(PrincipalUI.getCurrentChat(), LoginUsuario.getIdUsuario());
+							dispose();
+							
+							// Mostrar de nuevo los chats del usuario
+							PrincipalUI.container.removeAll();
+							PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
+							PrincipalUI.tab_chat.setVisible(false);
+							PrincipalUI.tab_noChat.setVisible(true);
+						}
+						else
+						{
+							System.out.println("ye");
+							// Salir del grupo
+							infog.salirIndividualGrupo(PrincipalUI.getCurrentChat(), LoginUsuario.getIdUsuario());
+							dispose();
+							
+							// Un usuario del grupo pasará a ser administrador
+							infog.updateAdmin(id_usuNewAdmin, PrincipalUI.getCurrentChat(), true);				
+							
+							// Mostrar de nuevo los chats del usuario
+							PrincipalUI.container.removeAll();
+							PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
+							PrincipalUI.tab_chat.setVisible(false);
+							PrincipalUI.tab_noChat.setVisible(true);
+						}					
+					}
+					// Si hay solo 1 participante (el usuario logueado), sale y borra del grupo
+					else if (opcion == 0 && count_participants <= 1)
+					{
+						infog.salirFinalGrupo(PrincipalUI.getCurrentChat());
+						dispose();
+						JOptionPane.showMessageDialog(null, "Se ha borrado el grupo porque eras el último participante", "Salir", JOptionPane.INFORMATION_MESSAGE);
+						
+						// Mostrar de nuevo los chats del user
+						PrincipalUI.container.removeAll();
+						PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
+						PrincipalUI.tab_chat.setVisible(false);
+						PrincipalUI.tab_noChat.setVisible(true);
+					}			
+					else
+					{
+						System.out.println("No se ha salido del grupo");
+					}
+				} 
+				catch (SQLException e1) 
 				{
-					System.out.println("No se ha salido del grupo");
-				}
+					System.out.println("Error SQL (salirButton - InfoGrupoUI)");
+					e1.printStackTrace();
+				}		
 			}
 		});
 		
-		JButton salirButton_1 = new JButton("Invitar usuarios");
-		salirButton_1.addActionListener(new ActionListener() {
+		JButton invitarButton = new JButton("Invitar usuarios");
+		invitarButton.addActionListener(new ActionListener() 
+		{
 			public void actionPerformed(ActionEvent e) 
 			{
 				InvitarUsuarioUI invi = new InvitarUsuarioUI();
 				invi.setVisible(true);
 			}
 		});
-		salirButton_1.setForeground(Color.WHITE);
-		salirButton_1.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		salirButton_1.setFocusPainted(false);
-		salirButton_1.setBorderPainted(false);
-		salirButton_1.setBackground(new Color(65, 105, 225));
-		salirButton_1.setBounds(271, 280, 160, 53);
-		contentPanel.add(salirButton_1);
+		invitarButton.setForeground(Color.WHITE);
+		invitarButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
+		invitarButton.setFocusPainted(false);
+		invitarButton.setBorderPainted(false);
+		invitarButton.setBackground(new Color(65, 105, 225));
+		invitarButton.setBounds(271, 280, 160, 53);
+		contentPanel.add(invitarButton);
 		salirButton.setFocusPainted(false);
 		salirButton.setBorderPainted(false);
 		salirButton.setBackground(new Color(255, 0, 0));
@@ -98,23 +165,23 @@ public class InfoGrupoUI extends JDialog
 		salirButton.setBounds(297, 357, 113, 30);
 		contentPanel.add(salirButton);
 		
-		JPanel panel = new JPanel();
-		panel.setBackground(new Color(65, 105, 225));
-		panel.setBounds(0, 0, 469, 53);
-		contentPanel.add(panel);
-		panel.setLayout(null);
+		JPanel panelBG = new JPanel();
+		panelBG.setBackground(new Color(65, 105, 225));
+		panelBG.setBounds(0, 0, 469, 53);
+		contentPanel.add(panelBG);
+		panelBG.setLayout(null);
 		
 		nombreGrupo = new JLabel("Nombre grupo");
-		nombreGrupo.setBounds(10, 10, 213, 25);
-		panel.add(nombreGrupo);
+		nombreGrupo.setBounds(9, 13, 213, 25);
+		panelBG.add(nombreGrupo);
 		nombreGrupo.setForeground(new Color(255, 255, 255));
 		nombreGrupo.setFont(new Font("Segoe UI", Font.BOLD, 18));
 		
 		fechaCreacion = new JLabel("Fecha creaci\u00F3n: 20/09/2021");
-		fechaCreacion.setFont(new Font("Segoe UI", Font.ITALIC, 16));
+		fechaCreacion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		fechaCreacion.setForeground(new Color(255, 255, 255));
-		fechaCreacion.setBounds(233, 11, 236, 25);
-		panel.add(fechaCreacion);
+		fechaCreacion.setBounds(250, 15, 236, 25);
+		panelBG.add(fechaCreacion);
 		
 		JLabel labelParticip = new JLabel("Participantes:");
 		labelParticip.setFont(new Font("Segoe UI", Font.PLAIN, 17));
@@ -133,71 +200,42 @@ public class InfoGrupoUI extends JDialog
 		participantes.setBounds(15, 103, 224, 297);
 		scroll.setViewportView(participantes);
 		participantes.setLayout(null);
-		
-		JPanel panel_1 = new JPanel();
-		panel_1.setVisible(false);
-		panel_1.setBackground(new Color(255, 250, 250));
-		panel_1.setBounds(10, 10, 210, 34);
-		participantes.add(panel_1);
-		panel_1.setLayout(null);
-		
-		JLabel lblNewLabel_4_1 = new JLabel("");
-		lblNewLabel_4_1.setIcon(new ImageIcon(InfoGrupoUI.class.getResource("/img/borrar.png")));
-		lblNewLabel_4_1.setBounds(186, 5, 18, 24);
-		panel_1.add(lblNewLabel_4_1);
-		
-		JLabel lblNewLabel = new JLabel("elliot");
-		lblNewLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		lblNewLabel.setBounds(10, 10, 35, 13);
-		panel_1.add(lblNewLabel);
-		
-		JLabel lblNewLabel_1 = new JLabel("Admin");
-		lblNewLabel_1.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 128, 0)));
-		lblNewLabel_1.setForeground(new Color(0, 128, 0));
-		lblNewLabel_1.setBounds(148, 11, 35, 13);
-		panel_1.add(lblNewLabel_1);
-		
-		JPanel panel_1_1 = new JPanel();
-		panel_1_1.setVisible(false);
-		panel_1_1.setBackground(new Color(255, 250, 250));
-		panel_1_1.setBounds(10, 54, 210, 34);
-		participantes.add(panel_1_1);
-		panel_1_1.setLayout(null);
-		
-		JLabel lblLuis = new JLabel("luis");
-		lblLuis.setBounds(10, 10, 29, 13);
-		lblLuis.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		panel_1_1.add(lblLuis);
-		
-		JLabel lblNewLabel_1_1 = new JLabel("Admin");
-		lblNewLabel_1_1.setForeground(new Color(0, 128, 0));
-		lblNewLabel_1_1.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 128, 0)));
-		lblNewLabel_1_1.setBounds(148, 11, 35, 13);
-		panel_1_1.add(lblNewLabel_1_1);
-		
-		JPanel panel_2 = new JPanel();
-		panel_2.setVisible(false);
-		panel_2.setBackground(Color.WHITE);
-		panel_2.setBounds(10, 98, 210, 34);
-		participantes.add(panel_2);
-		panel_2.setLayout(null);
-		
-		JLabel lblNewLabel_3 = new JLabel("maricarmenee");
-		lblNewLabel_3.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		lblNewLabel_3.setBounds(10, 10, 96, 13);
-		panel_2.add(lblNewLabel_3);
 		contentPanel.add(scroll);
 		
 		descripcionGroup = new JLabel("<html>Descripcion larga del grupo lorem ipsum cositas ipsum lorem</html>");
 		descripcionGroup.setVerticalAlignment(SwingConstants.TOP);
 		descripcionGroup.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		descripcionGroup.setBounds(271, 103, 150, 293);
+		descripcionGroup.setBounds(271, 103, 150, 102);
 		contentPanel.add(descripcionGroup);
 		
 		JLabel labelDesc = new JLabel("Descripci\u00F3n:");
 		labelDesc.setFont(new Font("Segoe UI", Font.PLAIN, 17));
 		labelDesc.setBounds(271, 65, 96, 36);
 		contentPanel.add(labelDesc);
+		
+		adminButton = new JButton("Cambiar admins");
+		if (LoginUsuario.isAdmin(LoginUsuario.getIdUsuario(), PrincipalUI.getCurrentChat()))
+		{
+			adminButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) 
+				{
+					infog.actualizarAdmins();
+					
+					InfoGrupoUI.getParticipantesContainer().removeAll();
+					InfoGrupo info = new InfoGrupo();
+					info.mostrarParticipantes(InfoGrupoUI.getParticipantesContainer());
+					adminButton.setVisible(false);
+				}
+			});
+			adminButton.setForeground(Color.WHITE);
+			adminButton.setBackground(new Color(0, 128, 0));
+			adminButton.setBorderPainted(false);
+			adminButton.setVisible(false);
+			adminButton.setFocusPainted(false);
+			adminButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
+			adminButton.setBounds(271, 226, 160, 36);
+			contentPanel.add(adminButton);
+		}
 		
 		init();
 	}

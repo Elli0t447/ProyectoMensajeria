@@ -98,7 +98,7 @@ public class AmigosUsuario
 				});
 				panelAmigo.add(borrarAmigo);
 						
-				padre.setPreferredSize(new Dimension(650, positionUI));
+				padre.setPreferredSize(new Dimension(250, positionUI));
 				padre.revalidate();
 				padre.repaint();
 				countAmigos++;

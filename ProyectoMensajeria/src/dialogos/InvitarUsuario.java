@@ -107,6 +107,7 @@ public class InvitarUsuario
 	
 	public void agregarParticipantes()
 	{
+		// Instanciando CrearGrupo para coger el metodo addParticipante
 		CrearGrupo c = new CrearGrupo();
 		
 		for (int i: amigosList)

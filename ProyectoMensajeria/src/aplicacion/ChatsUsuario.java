@@ -29,9 +29,9 @@ public class ChatsUsuario
 	private MensajesChat mC;
 	private Connection cn;
 	
-	public ChatsUsuario(MensajesChat constructor)
+	public ChatsUsuario(MensajesChat mensajes)
 	{
-		mC = constructor;
+		mC = mensajes;
 		cn = Conexion.Conectar();
 	}
 	
@@ -244,7 +244,7 @@ public class ChatsUsuario
 			
 			JLabel infoChat = new JLabel();
 			infoChat.setIcon(new ImageIcon(MensajesChat.class.getResource("/img/info.png")));
-			infoChat.setBounds(157, 8, 39, 37);
+			infoChat.setBounds(167, 8, 39, 37);
 			
 			infoChat.addMouseListener(new MouseAdapter()
 			{
