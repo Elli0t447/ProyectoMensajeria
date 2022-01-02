@@ -25,8 +25,13 @@ public class CrearGrupoUI extends JDialog
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	
+	// Objeto con la funcionalidad
 	private CrearGrupo newGrp;
+	
+	// Contenedor de participantes
 	private JPanel participantes;
+	
+	// Scroll de la lista de participantes
 	private JScrollPane scroll;
 
 
@@ -103,7 +108,8 @@ public class CrearGrupoUI extends JDialog
 		contentPanel.add(scroll);
 		
 		JButton crearGrupoBtn = new JButton("CREAR GRUPO");
-		crearGrupoBtn.addActionListener(new ActionListener() {
+		crearGrupoBtn.addActionListener(new ActionListener() 
+		{
 			public void actionPerformed(ActionEvent e) 
 			{
 				newGrp.crearGrupo(nombreGrupo.getText(), descripcionGrupo.getText());
@@ -124,6 +130,7 @@ public class CrearGrupoUI extends JDialog
 		init();
 	}
 	
+	// Incializa los elementos de la interfaz
 	private void init()
 	{
 		newGrp.rellenarAmigos(participantes);

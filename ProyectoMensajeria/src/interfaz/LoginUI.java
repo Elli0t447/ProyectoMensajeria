@@ -1,42 +1,39 @@
 package interfaz;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
-import java.awt.Font;
-import java.awt.Color;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.MatteBorder;
 
 import aplicacion.LoginUsuario;
 
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPasswordField;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.Component;
-import javax.swing.SwingConstants;
-
-public class LoginUI extends JFrame {
-
+public class LoginUI extends JFrame 
+{
 	private static final long serialVersionUID = 1L;
+	
 	private JPanel contentPane;
 	private JTextField usuarioLogin;
 	private JPasswordField passwordLogin;
 	
-	public static LoginUsuario login;
+	private static LoginUsuario login;
 	
-
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) 
 	{
 		try 
@@ -44,30 +41,24 @@ public class LoginUI extends JFrame {
 			//Definir el LookAndFeel del programa
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
 		} 		
-		catch (ClassNotFoundException e) 
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) 
 		{
-			e.printStackTrace();
-		} 
-		catch (InstantiationException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IllegalAccessException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (UnsupportedLookAndFeelException e) 
-		{	
-			e.printStackTrace();
+			System.out.println("Error al definir el LookAndFeel");
+			
 		}
 		
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
+		EventQueue.invokeLater(new Runnable() 
+		{
+			public void run() 
+			{
+				try 
+				{
 					LoginUI frame = new LoginUI();
 					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
+				} 
+				catch (Exception e) 
+				{
+					
 				}
 			}
 		});
@@ -85,8 +76,9 @@ public class LoginUI extends JFrame {
 		     ImageIcon programIcon = new ImageIcon(LoginUI.class.getResource("/img/chat.png"));
 		     setIconImage(programIcon.getImage());
 		  }
-		  catch (Exception whoJackedMyIcon) 
+		  catch (Exception e) 
 		  {
+			 
 		     System.out.println("Error icono no encontrado");
 		  }
 		
@@ -160,9 +152,7 @@ public class LoginUI extends JFrame {
 		botonLogin.setForeground(new Color(255, 255, 255));
 		botonLogin.setFont(new Font("Segoe UI", Font.BOLD, 20));
 		botonLogin.setBounds(68, 210, 132, 47);
-		form.add(botonLogin);
-		
-		
+		form.add(botonLogin);	
 		
 		JButton botonNuevaCuenta = new JButton("CREAR CUENTA");
 		botonNuevaCuenta.setForeground(new Color(105, 105, 105));
@@ -173,23 +163,55 @@ public class LoginUI extends JFrame {
 		botonNuevaCuenta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{				
-				String passwordFormated = new String(passwordLogin.getPassword());
-				login = new LoginUsuario(usuarioLogin.getText(), passwordFormated);			
-				login.nuevaCuenta();
-				
-				JOptionPane.showMessageDialog(null, "Nuevo usuario creado!", "Nuevo", JOptionPane.INFORMATION_MESSAGE);
-				usuarioLogin.setText("");
-				passwordLogin.setText("");
+				try
+				{
+					String passwordFormated = new String(passwordLogin.getPassword());
+					login = new LoginUsuario(usuarioLogin.getText(), passwordFormated);	
+					
+					int opcion = JOptionPane.showConfirmDialog(null, "¿Quieres crear una cuenta con estos datos?", " Crear", JOptionPane.YES_NO_OPTION);
+					int countUsus = 0;
+						
+					// Si el usuario existe no deja crear la cuenta nueva
+					if (opcion == 0)
+					{
+						ResultSet rsNomUsus = LoginUsuario.allNomUsuarios();
+						while (rsNomUsus.next())
+						{
+							if (usuarioLogin.getText().equals(rsNomUsus.getString("nombre")))
+							{
+								countUsus++;
+							}
+						}
+						
+						if (countUsus <= 0)
+						{								
+							login.nuevaCuenta();
+							
+							JOptionPane.showMessageDialog(null, "Nuevo usuario creado!", "Nuevo", JOptionPane.INFORMATION_MESSAGE);
+							usuarioLogin.setText("");
+							passwordLogin.setText("");
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(null, "Usuario ya existente!", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					}		
+					else
+					{
+						System.out.println("No se ha creado nueva cuenta");
+					}
+				}
+				catch (SQLException ex)
+				{
+					ex.printStackTrace();
+					System.out.println("ErrorSQL (botonNuevaCuenta)");
+				}
 			}
 		});
 		botonNuevaCuenta.setBackground(new Color(255, 255, 255));
 		botonNuevaCuenta.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
 		botonNuevaCuenta.setBounds(91, 291, 91, 21);
 		form.add(botonNuevaCuenta);
-		
-		
-		
-		
 		
 		JPanel bg = new JPanel();
 		bg.setBounds(0, 0, 383, 157);
@@ -210,11 +232,13 @@ public class LoginUI extends JFrame {
 		bg.add(iconoText);		
 	}
 	
+	// Entrar a la aplicacion con un usuario determinado
 	private void loginAction()
 	{
 		 String passwordFormated = new String(passwordLogin.getPassword());
+		 
 	     login = new LoginUsuario(usuarioLogin.getText(), passwordFormated);
-	     if (login.comprobarUser())
+	     if (login.comprobarExistenciaUser())
 	     {
 	    	 dispose();
 	    	 new PrincipalUI().setVisible(true);

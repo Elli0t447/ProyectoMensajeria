@@ -17,20 +17,23 @@ public class AjustesUsuario
 		cn = Conexion.Conectar();
 	}
 	
+	// Rellenar los datos de la pantalla de ajustes
 	public void datosAjustes()
 	{
-		String nomUsu = LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuario());
+		String nomUsu = LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuarioConectado());
 		
 		PrincipalUI.usuarioLabelAjustes.setText(nomUsu);
-		PrincipalUI.iDlabel.setText("(ID " + LoginUsuario.getIdUsuario() + ")");
+		PrincipalUI.idlabel.setText("(ID " + LoginUsuario.getIdUsuarioConectado() + ")");
 		PrincipalUI.nombreField.setText(nomUsu);
-		PrincipalUI.passwordField.setText(LoginUsuario.getContraseña());
 	}
 	
+	// Actualiza los datos de un usuario por su id
 	public void actualizarUsuario(String nom_usu, String pass, int id_usu)
 	{
 		try
 		{			
+			pass = LoginUsuario.encriptarContra(pass);
+			
 			if (cn != null)
 			{
 				PreparedStatement pst = cn.prepareStatement("UPDATE usuario SET nombre = ?, contra = ? WHERE id_usuario = ?");
@@ -50,6 +53,7 @@ public class AjustesUsuario
 		}
 	}
 	
+	// Borrar un usuario por su id
 	public void borrarUsuario(int id_usu)
 	{	
 		try

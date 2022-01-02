@@ -19,6 +19,8 @@ import java.sql.*;
 public class AmigosUsuario 
 {
 	private static Connection cn;
+	
+	// Objeto instanciado en PrincipalUI
 	private static AmigosUsuario au;
 	
 	public AmigosUsuario()
@@ -26,11 +28,12 @@ public class AmigosUsuario
 		cn = Conexion.Conectar();
 	}
 	
+	// Muestra la lista de amigos en el contenedor pasado por parametro, devuelve true si tienes mas de un amigo y false si no tienes (para mostrar un mensaje)
 	public boolean mostrarListaAmigos(JPanel padre)
 	{				
 		try 
 		{
-			ResultSet rsA = amigosUser(LoginUsuario.getIdUsuario());
+			ResultSet rsA = amigosUser(LoginUsuario.getIdUsuarioConectado());
 			
 			int positionUI = 10;
 			int incremento = 44;
@@ -43,7 +46,8 @@ public class AmigosUsuario
 				
 				int usuarioFinal;
 		
-				if (id_usu1 != LoginUsuario.getIdUsuario())
+				// Determina que usuario mostrar
+				if (id_usu1 != LoginUsuario.getIdUsuarioConectado())
 				{
 					usuarioFinal = id_usu1;				
 				}
@@ -77,8 +81,8 @@ public class AmigosUsuario
 						
 						if (opcion == 0)
 						{
-							au = PrincipalUI.amics;
-							borrarAmigo(LoginUsuario.getIdUsuario(), usuarioFinal);
+							au = PrincipalUI.amigosU;
+							borrarAmigo(LoginUsuario.getIdUsuarioConectado(), usuarioFinal);
 							
 							PrincipalUI.amigoContainer.removeAll();
 			                if(au.mostrarListaAmigos(PrincipalUI.amigoContainer) == false)
@@ -110,15 +114,15 @@ public class AmigosUsuario
 		} 
 		catch (SQLException e) 
 		{
-			System.out.println("Error de SQL");
-			e.printStackTrace();
+			System.out.println("Error de SQL (mostrarListaAmigos)");
 		}
 		return false;
 	}
 	
+	// Muestra la lista de peticiones en el contenedor pasado por parametro y devuelve true si tiene mas de una peticion y false si no tienes (para mostrar un mensaje)
 	public boolean mostrarListaPeticiones(JPanel padre)
 	{
-		ResultSet rsA = peticionesUser(LoginUsuario.getIdUsuario());
+		ResultSet rsA = peticionesUser(LoginUsuario.getIdUsuarioConectado());
 		
 		int countPeticiones = 0;
 		try 
@@ -133,7 +137,8 @@ public class AmigosUsuario
 				
 				int usuarioFinal;
 		
-				if (id_usu1 != LoginUsuario.getIdUsuario())
+				// Determinar cual usuario mostrar
+				if (id_usu1 != LoginUsuario.getIdUsuarioConectado())
 				{
 					usuarioFinal = id_usu1;				
 				}
@@ -162,9 +167,13 @@ public class AmigosUsuario
 				denegarPeticion.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) 
 					{		
-						au = PrincipalUI.amics;
-						borrarAmigo(LoginUsuario.getIdUsuario(), usuarioFinal);
+						// Instancia de la interfaz PrincipalUI
+						au = PrincipalUI.amigosU;
 						
+						// Borra la amistad entre los dos usuarios
+						borrarAmigo(LoginUsuario.getIdUsuarioConectado(), usuarioFinal);
+						
+						// Recarga la interfaz
 						PrincipalUI.peticionesContainer.removeAll();
 						if(au.mostrarListaPeticiones(PrincipalUI.peticionesContainer) == false)
 						{
@@ -187,11 +196,18 @@ public class AmigosUsuario
 					{		
 						AnyadirAmigo add = new AnyadirAmigo();
 						
-						au = PrincipalUI.amics;
-						aceptarAmistad(LoginUsuario.getIdUsuario(), usuarioFinal);
-						PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
-						add.insertarChat(LoginUsuario.getIdUsuario(), usuarioFinal);
+						// Instancia de la interfaz principal 
+						au = PrincipalUI.amigosU;
 						
+						// Acepta la amistad entre los dos usuarios
+						aceptarAmistad(LoginUsuario.getIdUsuarioConectado(), usuarioFinal);
+						PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
+						
+						// Inserta el chat al aceptar la amistad
+						add.insertarChat(LoginUsuario.getIdUsuarioConectado(), usuarioFinal);
+						
+						
+						// Recargar la interfaz
 						PrincipalUI.peticionesContainer.removeAll();
 						PrincipalUI.amigoContainer.removeAll();
 		                if(au.mostrarListaPeticiones(PrincipalUI.peticionesContainer) == false)
@@ -209,9 +225,12 @@ public class AmigosUsuario
 				});
 				panelPeticion.add(aceptarPeticion);
 						
+				// Determina el tamaño del scroll
 				padre.setPreferredSize(new Dimension(padre.getWidth(), positionUI));
+				
 				padre.revalidate();
 				padre.repaint();
+				
 				countPeticiones++;
 			}
 			if (countPeticiones > 0)
@@ -221,12 +240,12 @@ public class AmigosUsuario
 		} 
 		catch (SQLException e) 
 		{
-			System.out.println("Error de SQL");
-			e.printStackTrace();
+			System.out.println("Error de SQL (mostrarListaPeticiones)");
 		}
 		return false;
 	}
 	
+	// Devuelve todos los amigos de un usuario por id_usuario
 	public ResultSet amigosUser(int id_u)
 	{
 		ResultSet rs = null;
@@ -241,13 +260,13 @@ public class AmigosUsuario
 	    } 
 	    catch (SQLException ex) 
 	    {
-	        System.out.println("Error al seleccionar datos");
+	        System.out.println("Error SQL (amigosUser)");
 	    }
 		
 		return rs;
 	}
-	
-	
+		
+	// Devuelve todas las peticiones pendientes de un usuario
 	private ResultSet peticionesUser(int id_u)
 	{
 		ResultSet rs = null;
@@ -261,12 +280,13 @@ public class AmigosUsuario
 	    } 
 	    catch (SQLException ex) 
 	    {
-	        System.out.println("Error al seleccionar datos");
+	        System.out.println("Error SQL (peticionesUser)");
 	    }
 		
 		return rs;
 	}
 
+	// Cambiar el estado de una amistad entre dos usuarios a aceptada
 	private void aceptarAmistad(int id_u1, int id_u2)
 	{
 		try
@@ -287,11 +307,11 @@ public class AmigosUsuario
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
 			System.out.println("Error de SQL (aceptarAmistad)");
 		}
 	}
 	
+	// Borra la amistad entre dos usuarios, por lo tanto si tienen una conversacion tambien la borra
 	private void borrarAmigo(int id_u1, int id_u2)
 	{
 		try
@@ -315,6 +335,7 @@ public class AmigosUsuario
 				pst.setInt(4, id_u1);
                 rs = pst.executeQuery();         
                 
+                // Encuentra el chat para borrarlo
                 while (rs.next())
                 {
                 	id_chat = rs.getInt("id_chat");            	          	
@@ -331,7 +352,6 @@ public class AmigosUsuario
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
 			System.out.println("Error de SQL (borrarAmigo)");
 		}
 	}

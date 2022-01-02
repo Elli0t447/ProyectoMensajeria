@@ -19,12 +19,15 @@ import javax.swing.border.MatteBorder;
 
 public class InvitarUsuarioUI extends JDialog 
 {
-
 	private static final long serialVersionUID = 1L;
 	
+	// Scroll del contenedor de los amigos
 	private JScrollPane scroll;
+	
+	// Contenedor de los amigos
 	private JPanel amigoContainer;
 	
+	// Objeto con la funcionalidad
 	private InvitarUsuario invitar;
 	
 	/**
@@ -78,12 +81,13 @@ public class InvitarUsuarioUI extends JDialog
 		agregarButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{			
+				// Agrega todos los participantes seleccionados
 				invitar.agregarParticipantes();
 				dispose();
 				
 				// Recargar interfaz
 				InfoGrupoUI.getParticipantesContainer().removeAll();
-				InfoGrupo info = new InfoGrupo();
+				InfoGrupo info = new InfoGrupo(InfoGrupo.getTituloLabel(), InfoGrupo.getFechaLabel(), InfoGrupo.getDescripLabel());
 				info.mostrarParticipantes(InfoGrupoUI.getParticipantesContainer());
 				
 			}
@@ -108,6 +112,7 @@ public class InvitarUsuarioUI extends JDialog
 		init();
 	}
 	
+	// Inicializa el contenido de la interfaz
 	private void init()
 	{
 		invitar.cargarMisAmigos(amigoContainer);

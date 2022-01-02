@@ -1,27 +1,56 @@
 package aplicacion;
 
-import java.sql.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class LoginUsuario 
 {
-	private String usuario;
+	// Nombre usuario logueado
+	private static String usuario;
+	// Contraseña usuario logueado
 	private static String contraseña;
-	private static int id;
+	// ID usuario logueado
+	private static int id_usuario;
+	
 	private static Connection cn;
 	
-	public String getUsuario() { return usuario; }
-	public static String getContraseña() { return contraseña; }
-	public static int getIdUsuario() { return id; }
-	public static Connection getConexion() { return cn; }
+	public static String getNombreUsuarioConectado() { return usuario; }
+	public static String getContraseñaUsrConectado() { return contraseña; }
+	public static int getIdUsuarioConectado() { return id_usuario; }
 	
 	public LoginUsuario(String user, String pass)
 	{
 		usuario = user;
-		contraseña = pass;
+		contraseña = encriptarContra(pass);
 		cn = Conexion.Conectar();
 	}
 	
-	public boolean comprobarUser()
+	// Devuelve datos de un usuario por su nombre
+	private ResultSet usuarioRegistrado()
+	{
+	    ResultSet rs = null;
+
+	    try 
+	    {
+	        PreparedStatement pst = cn.prepareStatement("SELECT * FROM usuario WHERE nombre = ?");
+	        pst.setString(1, usuario);
+	        rs = pst.executeQuery();
+	        
+	    } 
+	    catch (SQLException ex) 
+	    {
+	        System.out.println("Error SQL (usuarioRegistrado)");
+	    }
+	    
+		return rs;
+	}
+	
+	// Comprueba si existe el usuario introducido en la base de datos
+	public boolean comprobarExistenciaUser()
 	{
 		try 
 		{
@@ -31,7 +60,7 @@ public class LoginUsuario
 			{
 				String user = rs.getString("nombre");
 				String pass = rs.getString("contra");				
-				id = rs.getInt("id_usuario");
+				id_usuario = rs.getInt("id_usuario");
 				
 				if (user.equals(usuario) && pass.equals(contraseña))
 				{
@@ -46,7 +75,7 @@ public class LoginUsuario
 		} 
 		catch (SQLException e) 
 		{
-			System.out.println("Error de SQL");
+			System.out.println("Error de SQL (comprobarExistenciaUser)");
 		}
 		return false;
 		
@@ -71,13 +100,12 @@ public class LoginUsuario
 	    } 
 	    catch (SQLException ex) 
 	    {
-	        System.out.println("Error al seleccionar datos");
+	        System.out.println("Error SQL (nombreUserPorId)");
 	    }
 	    
 		return nombreResult;
 	}
-	
-	
+
 	// Devolver id usuario por nombre usuario
 	public static int idUserPorNombre(String nom_u)
 	{
@@ -97,54 +125,29 @@ public class LoginUsuario
 	    } 
 	    catch (SQLException ex) 
 	    {
-	        System.out.println("Error al seleccionar datos");
+	        System.out.println("Error SQL (idUserPorNombre)");
 	    }
 	    
 		return nombreResult;
 	}
-	
-	private ResultSet usuarioRegistrado()
-	{
-	    ResultSet rs = null;
-
-	    try 
-	    {
-	        PreparedStatement pst = cn.prepareStatement("SELECT * FROM usuario WHERE nombre = ?");
-	        pst.setString(1, usuario);
-	        rs = pst.executeQuery();
-	        
-	    } 
-	    catch (SQLException ex) 
-	    {
-	        System.out.println("Error al seleccionar datos");
-	    }
-	    
-		return rs;
-	}
-	
-	
+		
+	// Inserta en usuario los datos de los textfield de LoginUI
 	public void nuevaCuenta()
 	{
 		try
 		{			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("INSERT INTO usuario (id_usuario, nombre, contra) VALUES (DEFAULT,?,?)");
-				pst.setString(1, usuario);
-				pst.setString(2, contraseña);
-                pst.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+			PreparedStatement pst = cn.prepareStatement("INSERT INTO usuario (id_usuario, nombre, contra) VALUES (DEFAULT,?,?)");
+			pst.setString(1, usuario);
+			pst.setString(2, contraseña);
+            pst.executeUpdate();
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Usuario con el mismo nombre ya existe error al crear nuevacuenta");
+			System.out.println("ErrorSQL (nuevaCuenta)");
 		}
 	}
 	
+	// Devuelve todos los nombres de usuario registrados en la base de datos
 	public static ResultSet allNomUsuarios()
 	{
 		ResultSet rs = null;
@@ -157,12 +160,13 @@ public class LoginUsuario
 	    } 
 	    catch (SQLException ex) 
 	    {
-	        System.out.println("Error al seleccionar datos");
+	        System.out.println("Error SQL (allNomUsuarios)");
 	    }
 	    
 		return rs;
 	}
 	
+	// Se le pasa un id_usuario y un id_chat y devuelve true o false en función de si administra ese chat o no
 	public static boolean isAdmin(int id_usuario, int id_chat)
 	{	
 		ResultSet rs;
@@ -198,10 +202,39 @@ public class LoginUsuario
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
 			System.out.println("Error SQL (isAdmin)");
 		}
 		
 		return false;
+	}
+	
+	// Devuelve la contraseña encriptada con MD5
+	public static String encriptarContra(String contra)
+	{
+		String encriptada = null;	
+		MessageDigest m;
+		try 
+		{
+			m = MessageDigest.getInstance("MD5");  
+	        m.update(contra.getBytes());  
+	          
+	        
+	        byte[] bytes = m.digest();  
+	           
+	        StringBuilder str = new StringBuilder();  
+	       
+	        for(int i = 0; i < bytes.length; i++)  
+	        {  
+	            str.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));  
+	        }  
+	                    
+	        encriptada = str.toString();  
+		} 
+		catch (NoSuchAlgorithmException e) 
+		{
+			System.out.println("Error encriptación MD5");
+		}  
+		
+		return encriptada;
 	}
 }

@@ -1,16 +1,19 @@
 package aplicacion;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Conexion 
 {
+	// Devuelve la conexion a la base de datos
 	public static Connection Conectar()
 	{
 		Connection cn = null;
 		
 		String ruta = "jdbc:postgresql://localhost:5432/mensajeria";
-		String user = "postgres";
-		String password = "";
+		String user = "mensajeriaUser";
+		String password = "msj";
 		
 		try 
 		{

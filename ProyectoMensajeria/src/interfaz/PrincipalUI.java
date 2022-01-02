@@ -22,6 +22,7 @@ import javax.swing.border.MatteBorder;
 
 import aplicacion.AmigosUsuario;
 import aplicacion.ChatsUsuario;
+import aplicacion.Conexion;
 import aplicacion.LoginUsuario;
 import aplicacion.MensajesChat;
 import dialogos.AjustesUsuario;
@@ -32,83 +33,72 @@ public class PrincipalUI extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	public static ChatsUsuario chatsU;
-	public static MensajesChat mC;
 	
+	// Objetos de funcionalidad 
+	public static ChatsUsuario chatsU;
+	public static MensajesChat mensajesC;
+	public static AmigosUsuario amigosU;
+	public static AjustesUsuario ajustesU;
+	
+	// Tabs de interfaz
 	public static JPanel tab_chat;
 	public static JPanel tab_noChat;
-	public static JLabel descripcionChat;
-	private JPanel barChat;
-	public static JPanel container;
+	public static JPanel tab_amigos;		
 	
-	private JLabel nochatLabel;
-	private JLabel noChatDesc;
-	
-	public static JLabel nombreChat;
-	public static JPanel containerMsj;
-	
-	private static JScrollPane scrollChat;
-	public static JScrollPane scrollMensaje;
-	private static JScrollPane scrollPeticion;
-	private static JScrollPane scrollAmigos;
-	
-	private static int chatEnvio;
-	private static boolean currentAdministra;
-	private static String currentChatTitulo;
-	private static String currentChatDesc;
-	public static JPanel tab_amigos;
-	private JLabel lblAmigos;
-	private JLabel lblAjustes_1;
-	public static JLabel usuarioLabelAjustes;
-	private JLabel lblNombre;
-	private JPanel panelito;
-	private JLabel descrip;
-	private JLabel lblContrasea;
-	public static JTextField nombreField;
-	public static JTextField passwordField;
-	public static JLabel iDlabel;
-	private JButton aplicarCambios;
-	public static JLabel descAmigo;
-	public static JLabel descPeti;
+	// Contenedores
 	public static JPanel amigoContainer;
 	public static JPanel peticionesContainer;
+	public static JPanel containerMsj;
+	public static JPanel container;
 	
-	public static AmigosUsuario amics;
-	private static AjustesUsuario ajustesUsu;
-	public static JPanel bg_chat;
+	// Scrolls de interfaz
+	public static JScrollPane scrollChat;
+	public static JScrollPane scrollMensaje;
+	public static JScrollPane scrollPeticion;
+	public static JScrollPane scrollAmigos;
+	
+	// UI Ajustes
+	public static JLabel usuarioLabelAjustes;
+	public static JTextField nombreField;
+	public static JTextField passwordField;
+	public static JLabel idlabel;
+	
+	// UI chat
+	public static JLabel noChatLabel;
+	public static JLabel noChatDesc;
+	public static JLabel descripcionChat;
+	public static JLabel nombreChat;
 	public static JPanel chatOption;
-	private JLabel lblNewLabel;
-	private JLabel lblNewLabel_1;
 	
-	public static void setCurrentChatTitulo(String c) { currentChatTitulo = c;}
-	public static void setCurrentChatDesc(String d) { currentChatDesc = d;}
+	// UI Amistad
+	public static JLabel descAmigo;
+	public static JLabel descPeti;
 	
-	public static String getCurrentChatTitulo() { return currentChatTitulo; }
-	public static String getCurrentChatDesc() { return currentChatDesc; }
-	
+	public static boolean currentAdministra;
+	public static String currentChatTitulo;
+	public static String currentChatDesc;
+		
 	public static void setCurrentAdministra(boolean a) { currentAdministra = a;}
 	public static boolean getCurrentAdministra() { return currentAdministra; }
-	
-	public static void setChatEnvio(int c) { chatEnvio = c;}
-	public static int getCurrentChat() { return chatEnvio; }
+
 
 	/**
 	 * Create the frame.
 	 */
 	public PrincipalUI() 
 	{
-		mC = new MensajesChat();
-		ajustesUsu = new AjustesUsuario();
+		mensajesC = new MensajesChat();
+		ajustesU = new AjustesUsuario();
 		
 		setResizable(false);
-		setTitle("Mensajería @" + LoginUI.login.getUsuario());
+		setTitle("Mensajería @" + LoginUsuario.getNombreUsuarioConectado());
 		try 
 		{
 			 // Definir icono de la aplicación
 		     ImageIcon programIcon = new ImageIcon(PrincipalUI.class.getResource("/img/chat.png"));
 		     setIconImage(programIcon.getImage());
 		 }
-		 catch (Exception whoJackedMyIcon) 
+		 catch (Exception ex) 
 		 {
 		    System.out.println("Error icono no encontrado");
 		 }
@@ -136,11 +126,17 @@ public class PrincipalUI extends JFrame
 		contentPane.add(tab_chat);
 		tab_chat.setLayout(null);
 		
-		bg_chat = new JPanel();
+		JPanel bg_chat = new JPanel();
 		bg_chat.setBackground(new Color(65, 105, 225));
 		bg_chat.setBounds(0, 0, 652, 60);
 		tab_chat.add(bg_chat);
 		bg_chat.setLayout(null);
+		
+		chatOption = new JPanel();
+		chatOption.setBackground(new Color(65, 105, 225));
+		chatOption.setBounds(380, 4, 215, 47);
+		bg_chat.add(chatOption);
+		chatOption.setLayout(null);
 		
 		descripcionChat = new JLabel("descripcionChat");
 		descripcionChat.setBounds(10, 30, (int)descripcionChat.getPreferredSize().getWidth() + 10, 21);
@@ -154,22 +150,24 @@ public class PrincipalUI extends JFrame
 		nombreChat.setForeground(new Color(255, 255, 255));
 		nombreChat.setFont(new Font("Segoe UI", Font.BOLD, 18));
 		
-		chatOption = new JPanel();
+		JPanel chatOption = new JPanel();
 		chatOption.setBackground(new Color(65, 105, 225));
 		chatOption.setBounds(380, 4, 215, 47);
 		bg_chat.add(chatOption);
 		chatOption.setLayout(null);
 		
-		lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/info.png")));
-		lblNewLabel_1.setBounds(157, 8, 39, 37);
-		chatOption.add(lblNewLabel_1);
+		JLabel infoChatImg = new JLabel("");
+		infoChatImg.setIcon(new ImageIcon(PrincipalUI.class.getResource("/img/info.png")));
+		infoChatImg.setBounds(157, 8, 39, 37);
+		chatOption.add(infoChatImg);
 		
-		lblNewLabel = new JLabel("Amigos desde: 2021/06/05");
-		lblNewLabel.setForeground(Color.WHITE);
-		lblNewLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-		lblNewLabel.setBounds(10, 10, 201, 27);
-		chatOption.add(lblNewLabel);
+		
+		
+		JLabel amigosDesdeLabel = new JLabel("Amigos desde: 2021/06/05");
+		amigosDesdeLabel.setForeground(Color.WHITE);
+		amigosDesdeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		amigosDesdeLabel.setBounds(10, 10, 201, 27);
+		chatOption.add(amigosDesdeLabel);
 		
 		containerMsj = new JPanel();
 		containerMsj.setBorder(null);
@@ -194,32 +192,32 @@ public class PrincipalUI extends JFrame
 		usuarioLabelAjustes.setBounds(191, 10, 221, 47);
 		tab_ajustes.add(usuarioLabelAjustes);
 		
-		lblNombre = new JLabel("Nombre:");
+		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setForeground(new Color(0, 0, 0));
 		lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		lblNombre.setBounds(230, 88, 66, 32);
 		tab_ajustes.add(lblNombre);
 		
-		panelito = new JPanel();
-		panelito.setBackground(new Color(255, 250, 250));
-		panelito.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(227, 227, 227)));
-		panelito.setBounds(0, 0, 181, 489);
-		tab_ajustes.add(panelito);
-		panelito.setLayout(null);
+		JPanel panelAjustes = new JPanel();
+		panelAjustes.setBackground(new Color(255, 250, 250));
+		panelAjustes.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(227, 227, 227)));
+		panelAjustes.setBounds(0, 0, 181, 489);
+		tab_ajustes.add(panelAjustes);
+		panelAjustes.setLayout(null);
 		
-		lblAjustes_1 = new JLabel("Ajustes");
+		JLabel lblAjustes_1 = new JLabel("Ajustes");
 		lblAjustes_1.setBounds(16, 10, 80, 34);
-		panelito.add(lblAjustes_1);
+		panelAjustes.add(lblAjustes_1);
 		lblAjustes_1.setFont(new Font("Segoe UI", Font.BOLD, 19));
 		lblAjustes_1.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
 		
-		descrip = new JLabel("<html>Cambia los ajustes de tu usuario</html>");
+		JLabel descrip = new JLabel("<html>Cambia los ajustes de tu usuario</html>");
 		descrip.setForeground(Color.DARK_GRAY);
 		descrip.setBounds(16, 52, 103, 45);
-		panelito.add(descrip);
+		panelAjustes.add(descrip);
 		descrip.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		lblContrasea = new JLabel("Contrase\u00F1a:");
+		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
 		lblContrasea.setForeground(Color.BLACK);
 		lblContrasea.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		lblContrasea.setBounds(215, 134, 94, 47);
@@ -237,7 +235,7 @@ public class PrincipalUI extends JFrame
 		passwordField.setBounds(319, 149, 420, 24);
 		tab_ajustes.add(passwordField);
 		
-		aplicarCambios = new JButton("Aplicar cambios");
+		JButton aplicarCambios = new JButton("Aplicar cambios");
 		aplicarCambios.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
@@ -255,9 +253,9 @@ public class PrincipalUI extends JFrame
 				{
 					while(rs.next())
 					{
-						if (!nombreField.getText().equals(rs.getString("nombre")) || nombreField.getText().equals(LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuario())))
+						if (!nombreField.getText().equals(rs.getString("nombre")) || nombreField.getText().equals(LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuarioConectado())))
 						{
-							ajustesUsu.actualizarUsuario(nombreField.getText(), passwordField.getText(), LoginUsuario.getIdUsuario());
+							ajustesU.actualizarUsuario(nombreField.getText(), passwordField.getText(), LoginUsuario.getIdUsuarioConectado());
 							usuarioLabelAjustes.setText(nombreField.getText());
 						}
 						else
@@ -266,6 +264,7 @@ public class PrincipalUI extends JFrame
 						}
 					}
 					
+					JOptionPane.showMessageDialog(null, "Usuario actualizado!", "Actualizar", JOptionPane.INFORMATION_MESSAGE);
 					System.out.println("Usuario actualizado!");
 				} 
 				catch (SQLException e1) 
@@ -282,11 +281,11 @@ public class PrincipalUI extends JFrame
 		aplicarCambios.setBounds(211, 202, 153, 47);
 		tab_ajustes.add(aplicarCambios);
 		
-		iDlabel = new JLabel("(ID 1)");
-		iDlabel.setForeground(Color.DARK_GRAY);
-		iDlabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-		iDlabel.setBounds(201, 53, 47, 24);
-		tab_ajustes.add(iDlabel);
+		idlabel = new JLabel("(ID 1)");
+		idlabel.setForeground(Color.DARK_GRAY);
+		idlabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		idlabel.setBounds(201, 53, 47, 24);
+		tab_ajustes.add(idlabel);
 		
 		JButton borrarUsuario = new JButton("BORRAR USUARIO");
 		borrarUsuario.addActionListener(new ActionListener() {
@@ -297,7 +296,7 @@ public class PrincipalUI extends JFrame
 				
 				if (opcion == 0)
 				{
-					ajustesUsu.borrarUsuario(LoginUsuario.getIdUsuario());
+					ajustesU.borrarUsuario(LoginUsuario.getIdUsuarioConectado());
 					dispose();
 					new LoginUI().setVisible(true);
 				}
@@ -327,7 +326,7 @@ public class PrincipalUI extends JFrame
 		descAmigo.setBounds(10, 54, 179, 63);
 		tab_amigos.add(descAmigo);
 		
-		lblAmigos = new JLabel("Amigos");
+		JLabel lblAmigos = new JLabel("Amigos");
 		lblAmigos.setFont(new Font("Segoe UI", Font.BOLD, 19));
 		lblAmigos.setBorder(new MatteBorder(0, 0, 4, 0, (Color) new Color(65, 105, 225)));
 		lblAmigos.setBounds(10, 10, 84, 34);
@@ -410,8 +409,8 @@ public class PrincipalUI extends JFrame
 			{	
 				if (!escribirTexto.getText().equals(""))
 				{	
-					mC.enviarMensaje(chatEnvio, LoginUsuario.getIdUsuario(), escribirTexto.getText());
-					mC.cargarChat(chatEnvio, PrincipalUI.containerMsj);	
+					mensajesC.enviarMensaje(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado(), escribirTexto.getText());
+					mensajesC.cargarChat(ChatsUsuario.getCurrentChat(), PrincipalUI.containerMsj);	
 					escribirTexto.setText("");
 				}
 				else
@@ -440,8 +439,16 @@ public class PrincipalUI extends JFrame
 		salir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				dispose();
-				new LoginUI().setVisible(true);
+				try 
+				{
+					Conexion.Conectar().close();
+					dispose();
+					new LoginUI().setVisible(true);
+				} 
+				catch (SQLException ex) 
+				{
+					ex.printStackTrace();
+				}		
 			}
 		});
 		salir.setBorderPainted(false);
@@ -449,7 +456,7 @@ public class PrincipalUI extends JFrame
 		salir.setBounds(13, 425, 45, 43);
 		bg_toolbar.add(salir);
 		
-		barChat = new JPanel();
+		JPanel barChat = new JPanel();
 		barChat.setBackground(new Color(255, 250, 250));
 		barChat.setBounds(66, 47, 186, 442);
 		toolbar.add(barChat);
@@ -467,11 +474,11 @@ public class PrincipalUI extends JFrame
 		scrollChat.setBorder(new MatteBorder(0, 0, 0, 1, (Color) new Color(227, 227, 227)));
 		scrollChat.getVerticalScrollBar().setUnitIncrement(7);
 		
-		nochatLabel = new JLabel("No tienes ningún chat :(");
-		nochatLabel.setBorder(null);
-		nochatLabel.setBounds(10, 10, 149, 34);
-		barChat.add(nochatLabel);
-		nochatLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+		noChatLabel = new JLabel("No tienes ningún chat :(");
+		noChatLabel.setBorder(null);
+		noChatLabel.setBounds(10, 10, 149, 34);
+		barChat.add(noChatLabel);
+		noChatLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		scrollChat.setViewportBorder(null);
 		scrollChat.setViewportView(container);	
 		
@@ -488,13 +495,13 @@ public class PrincipalUI extends JFrame
 		amigos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				amics = new AmigosUsuario();
+				amigosU = new AmigosUsuario();
 				
-				if (amics.mostrarListaAmigos(amigoContainer))
+				if (amigosU.mostrarListaAmigos(amigoContainer))
 				{
 					descAmigo.setVisible(false);
 				}
-				if (amics.mostrarListaPeticiones(peticionesContainer))
+				if (amigosU.mostrarListaPeticiones(peticionesContainer))
 				{
 					descPeti.setVisible(false);					
 				}
@@ -518,17 +525,17 @@ public class PrincipalUI extends JFrame
 			{
 				container.removeAll();
 				
-				chatsU = new ChatsUsuario(mC);
+				chatsU = new ChatsUsuario(mensajesC);
 				if (chatsU.mostrarListaChats(container))
 				{
 					container.setVisible(true);
-					nochatLabel.setVisible(false);
+					noChatLabel.setVisible(false);
 					noChatDesc.setVisible(false);
 				}	
 				else
 				{
 					container.setVisible(true);
-					nochatLabel.setVisible(true);
+					noChatLabel.setVisible(true);
 					noChatDesc.setVisible(true);
 				}
 				tab_amigos.setVisible(false);
@@ -616,23 +623,23 @@ public class PrincipalUI extends JFrame
 		tab_noChat.add(icon);
 		
 		init();
-		ajustesUsu.datosAjustes();
+		ajustesU.datosAjustes();
 		
 	}
 	
 	private void init()
 	{		
-		chatsU = new ChatsUsuario(mC);
+		chatsU = new ChatsUsuario(mensajesC);
 		if (chatsU.mostrarListaChats(container))
 		{
 			container.setVisible(true);
-			nochatLabel.setVisible(false);
+			noChatLabel.setVisible(false);
 			noChatDesc.setVisible(false);
 		}	
 		else
 		{		
 			container.setVisible(true);
-			nochatLabel.setVisible(true);
+			noChatLabel.setVisible(true);
 			noChatDesc.setVisible(true);
 			
 		}

@@ -16,32 +16,47 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 
+import aplicacion.ChatsUsuario;
 import aplicacion.Conexion;
 import aplicacion.LoginUsuario;
 import interfaz.InfoGrupoUI;
-import interfaz.PrincipalUI;
 
 public class InfoGrupo 
 {
 	private static Connection cn;
-	private static ArrayList<Integer> newAdmins = new ArrayList<>();
 	
-	public InfoGrupo()
+	// Lista de usuarios seleccionados en la lista de la interfaz
+	private static ArrayList<Integer> cambiarAdmins = new ArrayList<>();
+	
+	// Elementos de la interfaz de InfoGrupoUI pasados por el constructor
+	private static JLabel tituloLabel;
+	private static JLabel fechaLabel;
+	private static JLabel descripLabel;
+	
+	public static JLabel getTituloLabel() { return tituloLabel; }
+	public static JLabel getFechaLabel() { return fechaLabel; }
+	public static JLabel getDescripLabel() { return descripLabel; }
+	
+	public InfoGrupo(JLabel titulo, JLabel fecha, JLabel desc)
 	{
 		cn = Conexion.Conectar();
+		tituloLabel = titulo;
+		fechaLabel = fecha;
+		descripLabel = desc;
 	}
 	
-	public void mostrarInfoGrupo(JLabel tituloLabel, JLabel fechaLabel, JLabel descripLabel)
-	{
-		ResultSet rs = infoGrupoPorIdChat(PrincipalUI.getCurrentChat());
-		
-		try 
+	// Muestra la información del grupo en la interfaz
+	public void mostrarInfoGrupo()
+	{		
+		try
 		{
-			while (rs.next())
+			ResultSet rsInfoGrupo = infoGrupoPorIdChat(ChatsUsuario.getCurrentChat());
+			
+			while (rsInfoGrupo.next())
 			{
-				String nom = rs.getString("nombre");
-				String desc = rs.getString("descripcion");
-				String fecha = rs.getString("fecha_creacion");
+				String nom = rsInfoGrupo.getString("nombre");
+				String desc = rsInfoGrupo.getString("descripcion");
+				String fecha = rsInfoGrupo.getString("fecha_creacion");
 				
 				tituloLabel.setText(nom);
 				descripLabel.setText(desc);
@@ -51,25 +66,26 @@ public class InfoGrupo
 		catch (SQLException e) 
 		{
 			System.out.println("Error SQL (mostrarInfoGrupo)");
-			e.printStackTrace();
+			
 		}
 	}
 	
+	// Muestra la información de los participantes en una lista en la interfaz
 	public void mostrarParticipantes(JPanel padre)
 	{
-		ResultSet rs = participantesGrupo(PrincipalUI.getCurrentChat());
-		
-		try 
+		try
 		{
+			ResultSet rsParticipantes = participantesGrupo(ChatsUsuario.getCurrentChat());
+			
 			int positionUI = 10;
 			int increment = 44;
 			
-			while (rs.next())
+			while (rsParticipantes.next())
 			{
-				int id_usu = rs.getInt("id_usuario");
+				int id_usu = rsParticipantes.getInt("id_usuario");
 				String nomUsu = LoginUsuario.nombreUserPorId(id_usu);
 				
-				boolean administra = rs.getBoolean("administra");
+				boolean administra = rsParticipantes.getBoolean("administra");
 				
 				JPanel panelUsu = new JPanel();
 				panelUsu.setBounds(10, positionUI, 210, 34);
@@ -78,6 +94,7 @@ public class InfoGrupo
 				
 				padre.add(panelUsu);
 				
+				// Incrementa la posicion Y del container para que no se sobrepongan los paneles
 				positionUI += increment;
 				
 				JLabel nombreParticipante = new JLabel(nomUsu);
@@ -87,9 +104,7 @@ public class InfoGrupo
 						
 				JLabel adminIcon = new JLabel("Admin");
 				
-				// Cambiar usuarios a ADMINS
-				
-				
+				// Añadir un icono de admin si administran en el grupo
 				if (administra)
 				{				
 					adminIcon.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 128, 0)));
@@ -98,33 +113,32 @@ public class InfoGrupo
 					panelUsu.add(adminIcon);
 				}
 				
-			int usuarioFinal = id_usu;
+				// Variable auxiliar individual
+				int usuarioFinal = id_usu;
 				
-			   if (LoginUsuario.isAdmin(LoginUsuario.getIdUsuario(), PrincipalUI.getCurrentChat()) == true)
-			   {
-				  
-				   // Añade la funcionalidad de seleccionar y agregar admins a los usuarios
-				   panelUsu.addMouseListener(new MouseAdapter()
-					{
-						
+				if (LoginUsuario.isAdmin(LoginUsuario.getIdUsuarioConectado(), ChatsUsuario.getCurrentChat()) == true)
+				{			  
+					// Añade la funcionalidad de seleccionar y agregar admins a los usuarios
+					panelUsu.addMouseListener(new MouseAdapter()
+				    {					
 						@Override
 						public void mouseClicked(MouseEvent e)
 						{							
 							// seleccionar
-							if (panelUsu.getBackground().equals(new Color(255, 250, 250)) && !nombreParticipante.getText().equals(LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuario())))
+							if (!cambiarAdmins.contains(usuarioFinal) && !nombreParticipante.getText().equals(LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuarioConectado())))
 							{
-								newAdmins.add(usuarioFinal);
+								cambiarAdmins.add(usuarioFinal);
 								
 								panelUsu.setBackground(new Color(65, 105, 205));
 								nombreParticipante.setForeground(Color.WHITE);					
 							}
 							else //deseleccionar
 							{	
-								for (int i = 0; i < newAdmins.size(); i++)
+								for (int i = 0; i < cambiarAdmins.size(); i++)
 								{
-									if (newAdmins.get(i) == usuarioFinal)
+									if (cambiarAdmins.get(i) == usuarioFinal)
 									{
-										newAdmins.remove(i);
+										cambiarAdmins.remove(i);
 									}
 								}
 								
@@ -133,7 +147,7 @@ public class InfoGrupo
 							}
 							
 							// Muestra el boton de cambiar admin si hay mas de 1 seleccionado
-							if (newAdmins.size() > 0)
+							if (cambiarAdmins.size() > 0)
 							{
 								InfoGrupoUI.getAdminButton().setVisible(true);
 							}
@@ -144,11 +158,12 @@ public class InfoGrupo
 						}
 					});
 				   
-				    // Si eres admin aparece el boton de borrar usuarios del grupo
-					if (id_usu == LoginUsuario.getIdUsuario())
+				    // Si el usuario en la lista es tu usuario conectado, no añade el boton de borrarlo del grupo
+					if (id_usu == LoginUsuario.getIdUsuarioConectado())
 					{
 						adminIcon.setBounds(168, 11, 35, 13);
 					}
+					// Si el usuario en la lista no es tu usuario, añade un boton para poder eliminarlo del grupo
 					else
 					{
 						JLabel iconBorrar = new JLabel("");
@@ -159,11 +174,13 @@ public class InfoGrupo
 							@Override
 							public void mouseClicked(MouseEvent e)
 							{
+								
+								// Borrar a un usuario del grupo
 								int opcion = JOptionPane.showConfirmDialog(null, "¿Quieres eliminar a " + LoginUsuario.nombreUserPorId(id_usu) + " del grupo?", "Eliminar", JOptionPane.YES_NO_OPTION);
 
 								if (opcion == 0)
 								{	
-									removeParticipante(PrincipalUI.getCurrentChat(), id_usu);
+									removeParticipante(ChatsUsuario.getCurrentChat(), id_usu);
 									
 									// Recargar los participantes del grupo al borrar un usuario
 									InfoGrupoUI.getParticipantesContainer().removeAll();
@@ -179,11 +196,11 @@ public class InfoGrupo
 						panelUsu.add(iconBorrar);
 					}
 			   }
+			   // Reposiciona el icono de admin
 			   else
 			   {
 				   adminIcon.setBounds(168, 11, 35, 13);
-			   }
-			   
+			   }	   
 			}	
 			
 			padre.revalidate();
@@ -192,7 +209,7 @@ public class InfoGrupo
 		catch (SQLException e) 
 		{
 			System.out.println("Error SQL (mostrarParticipantes)");
-			e.printStackTrace();
+			
 		}
 	}
 	
@@ -200,15 +217,14 @@ public class InfoGrupo
 	{
 		ResultSet rs = null;
 		
-		try
-		{
+		try 
+		{	
 			PreparedStatement pst = cn.prepareStatement("SELECT * FROM participa WHERE id_chat = ?");
 			pst.setInt(1, id_chat);
 	        rs = pst.executeQuery();
 		}
 		catch(SQLException e)
-		{
-			e.printStackTrace();
+		{			
 			System.out.println("Error SQL (participantesGrupo)");
 		}
 		
@@ -219,147 +235,105 @@ public class InfoGrupo
 	{
 		ResultSet rs = null;
 		
-		try
-		{
+		try 
+		{	
 			PreparedStatement pst = cn.prepareStatement("SELECT * FROM participa WHERE id_chat = ? AND administra = true");
 			pst.setInt(1, id_chat);
 	        rs = pst.executeQuery();
 		}
 		catch(SQLException e)
-		{
-			e.printStackTrace();
+		{		
 			System.out.println("Error SQL (adminsGrupo)");
 		}
 		
 		return rs;
 	}
 
+	// Saca toda la informacion de un grupo por id_chat
 	private ResultSet infoGrupoPorIdChat(int id_chat)
 	{
 		ResultSet rs = null;
 		
-		try
-		{
+		try 
+		{	
 			PreparedStatement pst = cn.prepareStatement("SELECT * FROM grupo WHERE id_chat = ?");
 			pst.setInt(1, id_chat);
 	        rs = pst.executeQuery();
 		}
 		catch(SQLException e)
-		{
-			e.printStackTrace();
-			System.out.println("Error SQL (grupoPorId)");
+		{			
+			System.out.println("Error SQL (infoGrupoPorIdChat)");
 		}
 		
 		return rs;
 	}
 	
+	// Borra a un usuario de un grupo
 	public void removeParticipante(int id_chat, int id_usu)
 	{
-		try
+		try 
 		{			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("DELETE FROM participa WHERE id_chat = ? AND id_usuario = ?");
-                pst.setInt(1, id_chat);
-                pst.setInt(2, id_usu);
-				pst.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula. remove");
-			}
+			PreparedStatement pst = cn.prepareStatement("DELETE FROM participa WHERE id_chat = ? AND id_usuario = ?");
+			pst.setInt(1, id_chat);
+            pst.setInt(2, id_usu);
+			pst.executeUpdate();
 		}
 		catch (SQLException e)
-		{
-			e.printStackTrace();
+		{			
 			System.out.println("ErrorSQL (removeParticipante)");
 		}		
 	}
 	
-	public void salirIndividualGrupo(int id_chat, int id_usuario)
+	// Borra un chat por completo por id_chat
+	public void salirUltimoEnGrupo(int id_chat)
 	{
 		try
-		{			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("DELETE FROM participa WHERE id_chat = ? AND id_usuario = ?");
-				pst.setInt(1, id_chat);
-				pst.setInt(2, id_usuario);
-	            pst.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+		{		
+			PreparedStatement pst = cn.prepareStatement("DELETE FROM chat WHERE id_chat = ?");
+			pst.setInt(1, id_chat);
+            pst.executeUpdate();
 		}
 		catch (SQLException e)
-		{
-			e.printStackTrace();
-			System.out.println("Error SQL (salirIndividualGrupo)");
+		{		
+			System.out.println("Error SQL (salirUltimoEnGrupo)");
 		}
 	}
 	
-	public void salirFinalGrupo(int id_chat)
-	{
-		try
-		{			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("DELETE FROM chat WHERE id_chat = ?");
-				pst.setInt(1, id_chat);
-	            pst.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			System.out.println("Error SQL (salirFinalGrupo)");
-		}
-	}
-	
+	// Convierte a un usuario en un chat concreto en administrador
 	public void updateAdmin(int id_usuario, int id_chat, boolean admin)
 	{
 		try
 		{			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("UPDATE participa SET administra = ? WHERE id_chat = ? AND id_usuario = ?");
-				pst.setBoolean(1, admin);
-				pst.setInt(2, id_chat);
-				pst.setInt(3, id_usuario);
-	            pst.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+			PreparedStatement pst = cn.prepareStatement("UPDATE participa SET administra = ? WHERE id_chat = ? AND id_usuario = ?");
+			pst.setBoolean(1, admin);
+			pst.setInt(2, id_chat);
+			pst.setInt(3, id_usuario);
+            pst.executeUpdate();
 		}
 		catch (SQLException e)
-		{
-			e.printStackTrace();
+		{			
 			System.out.println("Error SQL (updateAdmin)");
 		}
 	}
 	
+	/* Bucle para actualizar a todos los usuarios seleccionados (en la ArrayList cambiarAdmins)
+	  Si ya son admins y estan seleccionados, los vuelven a false en vez de volver a cambiarlos a true
+	  Además despues de haberlos actualizado limpia la lista de seleccionados*/ 
 	public void actualizarAdmins()
 	{
-		for (int i: newAdmins)
+		for (int i: cambiarAdmins)
 		{
-			if (LoginUsuario.isAdmin(i, PrincipalUI.getCurrentChat()))
+			if (LoginUsuario.isAdmin(i, ChatsUsuario.getCurrentChat()))
 			{
-				updateAdmin(i, PrincipalUI.getCurrentChat(), false);
+				updateAdmin(i, ChatsUsuario.getCurrentChat(), false);
 			}
-			else if (!LoginUsuario.isAdmin(i, PrincipalUI.getCurrentChat()))
+			else if (!LoginUsuario.isAdmin(i, ChatsUsuario.getCurrentChat()))
 			
 			{
-				updateAdmin(i, PrincipalUI.getCurrentChat(), true);
+				updateAdmin(i, ChatsUsuario.getCurrentChat(), true);
 			}
 		}
 		
-		 newAdmins.clear();
+		 cambiarAdmins.clear();
 	}
 }

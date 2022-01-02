@@ -69,7 +69,7 @@ public class AnyadirAmigoUI extends JDialog
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				add.enviarSolicitud(LoginUsuario.getIdUsuario(), LoginUsuario.idUserPorNombre((String) noAmigosBox.getSelectedItem()));
+				add.enviarSolicitud(LoginUsuario.getIdUsuarioConectado(), LoginUsuario.idUserPorNombre((String) noAmigosBox.getSelectedItem()));
 				dispose();
 				JOptionPane.showMessageDialog(null, "Solicitud enviada!", "Solicitud", JOptionPane.INFORMATION_MESSAGE);
 			}

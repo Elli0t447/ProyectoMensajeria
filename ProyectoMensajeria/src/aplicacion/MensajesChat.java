@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.security.Principal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,49 +19,45 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import interfaz.InfoGrupoUI;
 import interfaz.PrincipalUI;
 
 public class MensajesChat
-{
-	private static int positionUI;
-	private static int msj;
-	
+{	
 	private Connection cn;
 	
+	// Instancia de la interfaz principal
 	private MensajesChat mcc;
-	private AmigosUsuario amigos;
 	
 	public MensajesChat()
 	{
 		cn = Conexion.Conectar();
-		amigos = new AmigosUsuario();
 	}
 	
+	// Muestra los mensajes del chat por id_chat
 	public void cargarChat(int id_c, JPanel parent)
 	{
 		PrincipalUI.tab_noChat.setVisible(false);
 		PrincipalUI.tab_chat.setVisible(true);	
 		
-		ResultSet rs = selectMensajesUserEnChat(id_c);
+		ResultSet rsMensajesEnChat = selectMensajesEnChat(id_c);
 		
 		try 
 		{
-			positionUI = 10;
+			int positionUI = 10;
 			int incremento = 54;
 			
-			while (rs.next())
+			while (rsMensajesEnChat.next())
 			{
-				String mensaje = rs.getString("texto");
-				int usuario = rs.getInt("id_usuario");
-				msj = rs.getInt("id_mensaje");
+				String mensaje = rsMensajesEnChat.getString("texto");
+				int usuario = rsMensajesEnChat.getInt("id_usuario");
+				int id_msj = rsMensajesEnChat.getInt("id_mensaje");
 				
 				// Fecha actual
 				Date hoy = Date.valueOf(LocalDate.now());
 				
 				// Fecha de envio del mensaje
-				Date fecha = rs.getDate("fecha");
-				Timestamp fechaHora = rs.getTimestamp("fecha");
+				Date fecha = rsMensajesEnChat.getDate("fecha");
+				Timestamp fechaHora = rsMensajesEnChat.getTimestamp("fecha");
 								
 				// Hora de envio del mensaje
 				String[] aux = fechaHora.toString().split("\\.");			
@@ -77,9 +72,10 @@ public class MensajesChat
 				msjPanel.setBounds(12, positionUI, 590, 47);
 				parent.add(msjPanel);
 				
+				// Cambia la posicion del panel siguiente
 				positionUI += incremento;
 				
-				int currentMensaje = msj;
+				int currentMensaje = id_msj;
 				
 				JPanel miniMenu = new JPanel();
 				miniMenu.setLayout(null);
@@ -117,6 +113,7 @@ public class MensajesChat
 				fechaMensaje.setBounds((int)usuarioMensaje.getPreferredSize().getWidth() + 23, 10, 570, 13);
 				msjPanel.add(fechaMensaje);	
 				
+				// Determinar el texto de la fecha del mensaje
 				if (fecha.before(hoy))
 				{
 					fechaMensaje.setText(fecha.toString());
@@ -135,10 +132,10 @@ public class MensajesChat
 					{
 						msjPanel.setBackground(new Color(245, 245, 245));
 						
-						if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == false && PrincipalUI.getCurrentAdministra() == true)
+						if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == false && PrincipalUI.getCurrentAdministra() == true)
 						{
 							
-							if (LoginUsuario.getIdUsuario() == usuFinal)
+							if (LoginUsuario.getIdUsuarioConectado() == usuFinal)
 							{	
 								miniMenu.setVisible(true);
 								iconEditar.setVisible(true);							
@@ -151,9 +148,9 @@ public class MensajesChat
 								iconEditar.setVisible(false);
 							}
 						}
-						else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == false && PrincipalUI.getCurrentAdministra() == false)
+						else if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == false && PrincipalUI.getCurrentAdministra() == false)
 						{
-							if (LoginUsuario.getIdUsuario() == usuFinal)
+							if (LoginUsuario.getIdUsuarioConectado() == usuFinal)
 							{
 								miniMenu.setVisible(true);
 							}
@@ -162,9 +159,9 @@ public class MensajesChat
 								miniMenu.setVisible(false);
 							}
 						}
-						else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == true)
+						else if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == true)
 						{
-							if (LoginUsuario.getIdUsuario() == usuFinal)
+							if (LoginUsuario.getIdUsuarioConectado() == usuFinal)
 							{
 								miniMenu.setVisible(true);
 							}
@@ -190,10 +187,10 @@ public class MensajesChat
 					{
 						msjPanel.setBackground(new Color(245, 245, 245));
 												
-						if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == false && PrincipalUI.getCurrentAdministra() == true)
+						if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == false && PrincipalUI.getCurrentAdministra() == true)
 						{
 							miniMenu.setVisible(true);
-							if (LoginUsuario.getIdUsuario() == usuFinal)
+							if (LoginUsuario.getIdUsuarioConectado() == usuFinal)
 							{
 								iconEditar.setVisible(true);							
 							}
@@ -204,9 +201,9 @@ public class MensajesChat
 								iconEditar.setVisible(false);
 							}
 						}
-						else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == false && PrincipalUI.getCurrentAdministra() == false)
+						else if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == false && PrincipalUI.getCurrentAdministra() == false)
 						{
-							if (LoginUsuario.getIdUsuario() == usuFinal)
+							if (LoginUsuario.getIdUsuarioConectado() == usuFinal)
 							{
 								miniMenu.setVisible(true);
 							}
@@ -215,9 +212,9 @@ public class MensajesChat
 								miniMenu.setVisible(false);
 							}
 						}
-						else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == true)
+						else if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == true)
 						{
-							if (LoginUsuario.getIdUsuario() == usuFinal)
+							if (LoginUsuario.getIdUsuarioConectado() == usuFinal)
 							{
 								miniMenu.setVisible(true);
 							}
@@ -242,21 +239,22 @@ public class MensajesChat
 						
 						if (opcion == null)
 						{
-							System.out.println("na no editao");
+							System.out.println("Mensaje no editado");
 						}
 						else
 						{
+							mcc = PrincipalUI.mensajesC;
+							
+							// Editar mensaje
 							editarMensaje(opcion, currentMensaje);
 							
-							mcc = PrincipalUI.mC;
-							PrincipalUI.setCurrentChatDesc(PrincipalUI.getCurrentChatDesc());
-							PrincipalUI.setCurrentChatTitulo(PrincipalUI.getCurrentChatTitulo());
-							PrincipalUI.nombreChat.setText(PrincipalUI.getCurrentChatTitulo());
 							
-							PrincipalUI.descripcionChat.setText(PrincipalUI.getCurrentChatDesc());
+							
+							// Recargar la interfaz
 							PrincipalUI.containerMsj.removeAll();
 							PrincipalUI.setCurrentAdministra(PrincipalUI.getCurrentAdministra());
-							mcc.cargarChat(PrincipalUI.getCurrentChat(), PrincipalUI.containerMsj);
+							mcc.cargarChat(ChatsUsuario.getCurrentChat(), PrincipalUI.containerMsj);
+							
 							parent.revalidate();
 							parent.repaint();
 						}
@@ -273,10 +271,10 @@ public class MensajesChat
 						msjPanel.setBackground(new Color(245, 245, 245));
 												
 						// Es admin de un grupo
-						if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == false && PrincipalUI.getCurrentAdministra() == true)
+						if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == false && PrincipalUI.getCurrentAdministra() == true)
 						{
 							miniMenu.setVisible(true);
-							if (LoginUsuario.getIdUsuario() == usuario)
+							if (LoginUsuario.getIdUsuarioConectado() == usuario)
 							{
 								iconEditar.setVisible(true);							
 							}
@@ -288,9 +286,9 @@ public class MensajesChat
 							}
 						}
 						// No es admin de un grupo
-						else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == false && PrincipalUI.getCurrentAdministra() == false)
+						else if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == false && PrincipalUI.getCurrentAdministra() == false)
 						{
-							if (LoginUsuario.getIdUsuario() == usuario)
+							if (LoginUsuario.getIdUsuarioConectado() == usuario)
 							{
 								miniMenu.setVisible(true);
 							}
@@ -300,9 +298,9 @@ public class MensajesChat
 							}
 						}
 						// Si es una conversación
-						else if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == true && PrincipalUI.getCurrentAdministra() == false)
+						else if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == true && PrincipalUI.getCurrentAdministra() == false)
 						{
-							if (LoginUsuario.getIdUsuario() == usuario)
+							if (LoginUsuario.getIdUsuarioConectado() == usuario)
 							{
 								miniMenu.setVisible(true);
 							}
@@ -330,48 +328,48 @@ public class MensajesChat
 						{
 							borrarMensaje(currentMensaje);
 
-							mcc = PrincipalUI.mC;
-							PrincipalUI.nombreChat.setText(PrincipalUI.getCurrentChatTitulo());
-							if (PrincipalUI.chatsU.isConver(PrincipalUI.getCurrentChat()) == true)
+							mcc = PrincipalUI.mensajesC;
+							PrincipalUI.nombreChat.setText(PrincipalUI.currentChatTitulo);
+							if (PrincipalUI.chatsU.isConver(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado()) == true)
 							{
 								PrincipalUI.nombreChat.setBounds(10, 12, 361, 33);
 							}
-							PrincipalUI.descripcionChat.setText(PrincipalUI.getCurrentChatDesc());
+							PrincipalUI.descripcionChat.setText(PrincipalUI.currentChatDesc);
 							PrincipalUI.containerMsj.removeAll();
 							PrincipalUI.setCurrentAdministra(PrincipalUI.getCurrentAdministra());
-							mcc.cargarChat(PrincipalUI.getCurrentChat(), PrincipalUI.containerMsj);
+							mcc.cargarChat(ChatsUsuario.getCurrentChat(), PrincipalUI.containerMsj);
 							
 							parent.revalidate();
 							parent.repaint();
 						}
 						else
 						{
-							System.out.println("pos na no se borra bro");
-						}
-						
-						
+							System.out.println("Mensaje no borrado");
+						}			
 					}
 					
 				});
 			}
 			
+			// Baja el scroll abajo del todo para mostrar el ultimo mensaje
 			PrincipalUI.scrollMensaje.getViewport().setViewPosition(new Point(1, positionUI));
+			
+			// Determina el tamaño del scroll
 			parent.setPreferredSize(new Dimension(560, positionUI));
+			
 			parent.revalidate();
 			parent.repaint();
 	
 		}
 		catch (SQLException e) 
 		{
-			System.out.println("Error de SQL");
-			e.printStackTrace();
+			System.out.println("Error de SQL (cargarChat)");
 		}
 	}
 	
+	// Insertar un mensaje por chat, usuario y texto del mensaje
 	public void enviarMensaje(int id_c, int id_u, String mensaje)
-	{
-		cn = LoginUsuario.getConexion();
-		
+	{	
 		try
 		{			
 			if (cn != null)
@@ -389,13 +387,13 @@ public class MensajesChat
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Usuario con el mismo nombre ya existe (enviarMensaje)");
+			System.out.println("ErrorSQL (enviarMensaje)");
 		}
 	}
 	
-	private ResultSet selectMensajesUserEnChat(int id_c)
+	// Devuelve todos los mensajes de un chat
+	private ResultSet selectMensajesEnChat(int id_c)
 	{
-		cn = LoginUsuario.getConexion();
 		String consultaSQL = "SELECT * FROM mensaje WHERE id_chat = ? ORDER BY fecha ASC";
 		
 		ResultSet rs = null;
@@ -408,16 +406,15 @@ public class MensajesChat
 	    } 
 	    catch (SQLException ex) 
 	    {
-	        System.out.println("Error al seleccionar datos");
+	        System.out.println("Error SQL (selectMensajesUserEnChat)");
 	    }
 	
 		return rs;
 	}
 
+	// Edita el texto de un mensaje
 	private void editarMensaje(String txt, int id_m)
 	{
-		cn = LoginUsuario.getConexion();
-		
 		try
 		{			
 			if (cn != null)
@@ -434,14 +431,13 @@ public class MensajesChat
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Usuario con el mismo nombre ya existe (cambiarMensaje)");
+			System.out.println("ErrorSQL (cambiarMensaje)");
 		}
 	}
 	
+	// Borra el mensaje de un usuario en un chat
 	public void borrarMensaje(int id_m)
 	{
-		cn = LoginUsuario.getConexion();
-		
 		try
 		{			
 			if (cn != null)
@@ -457,8 +453,7 @@ public class MensajesChat
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Usuario con el mismo nombre ya existe (borrarMensaje)");
+			System.out.println("ErrorSQL (borrarMensaje)");
 		}
 	}
-
 }

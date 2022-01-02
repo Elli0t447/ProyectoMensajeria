@@ -18,6 +18,8 @@ import aplicacion.LoginUsuario;
 public class CrearGrupo 
 {
 	private static Connection cn;
+	
+	// Lista con los participantes seleccionados
 	private ArrayList<Integer> participantes = new ArrayList<>();
 	
 	public CrearGrupo()
@@ -25,24 +27,26 @@ public class CrearGrupo
 		cn = Conexion.Conectar();
 	}
 	
+	// Llena el contenedor de participantes a añadir, con tus amigos
 	public void rellenarAmigos(JPanel padre)
 	{	
 		try 
 		{
 			AmigosUsuario amigos = new AmigosUsuario();		
-			ResultSet rs = amigos.amigosUser(LoginUsuario.getIdUsuario());
+			ResultSet rsAmigosUserConectado = amigos.amigosUser(LoginUsuario.getIdUsuarioConectado());
 			
 			int positionUI = 10;
 			int increment = 38;
 			
-			while (rs.next())
+			while (rsAmigosUserConectado.next())
 			{
-				int id_usu1 = rs.getInt("id_usu1");
-				int id_usu2 = rs.getInt("id_usu2");
+				int id_usu1 = rsAmigosUserConectado.getInt("id_usu1");
+				int id_usu2 = rsAmigosUserConectado.getInt("id_usu2");
 				
+				// Lógica para determinar cual usuario mostrar
 				int usuarioFinal;
 		
-				if (id_usu1 != LoginUsuario.getIdUsuario())
+				if (id_usu1 != LoginUsuario.getIdUsuarioConectado())
 				{
 					usuarioFinal = id_usu1;				
 				}
@@ -51,7 +55,7 @@ public class CrearGrupo
 					usuarioFinal = id_usu2;
 				}
 				
-				String nom = LoginUsuario.nombreUserPorId(usuarioFinal);
+				String nomAmigo = LoginUsuario.nombreUserPorId(usuarioFinal);
 				
 				JPanel panelAmigo = new JPanel();
 				panelAmigo.setLayout(null);
@@ -61,28 +65,27 @@ public class CrearGrupo
 				
 				positionUI += increment;
 				
-				JLabel nomAmigo = new JLabel(nom);
-				nomAmigo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-				nomAmigo.setBounds(8, 6, 122, 13);
-				panelAmigo.add(nomAmigo);
+				JLabel nomAmigoLabel = new JLabel(nomAmigo);
+				nomAmigoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+				nomAmigoLabel.setBounds(8, 6, 122, 13);
+				panelAmigo.add(nomAmigoLabel);
 				
 				panelAmigo.addMouseListener(new MouseAdapter()
-				{
-					
+				{				
 					@Override
 					public void mouseClicked(MouseEvent e)
-					{							
-						
-						if (panelAmigo.getBackground().equals(new Color(255, 250, 250)))
+					{												
+						// Si no esta en la lista de seleccionados lo añade y lo muestra en la interfaz como seleccionado
+						if (!participantes.contains(usuarioFinal))
 						{
-							panelAmigo.setBackground(new Color(65, 105, 205));
-							nomAmigo.setForeground(Color.WHITE);
 							participantes.add(usuarioFinal);
+							
+							panelAmigo.setBackground(new Color(65, 105, 205));
+							nomAmigoLabel.setForeground(Color.WHITE);				
 						}
+						// Si ya esta en la lista significa que ya esta seleccionado asi que lo deselecciona y elimina de la lista
 						else
 						{
-							panelAmigo.setBackground(new Color(255, 250, 250));
-							nomAmigo.setForeground(Color.BLACK);
 							for (int i = 0; i < participantes.size(); i++)
 							{
 								if (participantes.get(i) == usuarioFinal)
@@ -90,103 +93,96 @@ public class CrearGrupo
 									participantes.remove(i);
 								}
 							}
+							
+							panelAmigo.setBackground(new Color(255, 250, 250));
+							nomAmigoLabel.setForeground(Color.BLACK);
 						}
 					}
 				});
 				
 			}
 			
+			// Determinar el tamaño del scroll
 			padre.setPreferredSize(new Dimension(200, positionUI));
+			
 			padre.repaint();
 			padre.revalidate();
 		} 
 		catch (SQLException e) 
 		{
-			e.printStackTrace();
+			
 			System.out.println("Error de SQL (rellenarAmigos)");
 		}
 	}
 	
+	// Inserta en chat, en grupo, y en participa para crear un grupo con tu usuario logueado como usuario administrador
 	public void crearGrupo(String nom, String descripcion)
 	{
 		try
 		{			
-			if (cn != null)
+			cn.setAutoCommit(false);
+			
+			PreparedStatement pst = cn.prepareStatement("BEGIN; INSERT INTO chat VALUES (DEFAULT); INSERT INTO grupo SELECT currval ('chat_id_chat_seq'), ?, ?, now(); INSERT INTO participa (id_chat, id_usuario, administra) SELECT currval ('chat_id_chat_seq'), ?, true; END;");
+            pst.setString(1, nom);
+            pst.setString(2, descripcion);
+            pst.setInt(3, LoginUsuario.getIdUsuarioConectado());
+			pst.executeUpdate();
+					
+			
+			// Además añade a los usuarios iniciales que hayas seleccionado
+			for (int i = 0; i < participantes.size(); i++)
 			{
-				PreparedStatement pst = cn.prepareStatement("BEGIN; INSERT INTO chat VALUES (DEFAULT); INSERT INTO grupo SELECT currval ('chat_id_chat_seq'), ?, ?, now(); INSERT INTO participa (id_chat, id_usuario, administra) SELECT currval ('chat_id_chat_seq'), ?, true; END;");
-                pst.setString(1, nom);
-                pst.setString(2, descripcion);
-                pst.setInt(3, LoginUsuario.getIdUsuario());
-				pst.executeUpdate();
-				
-				for (int i = 0; i < participantes.size(); i++)
-				{
-					addParticipante(ultimoChat(), participantes.get(i), false);
-				}
+				addParticipante(ultimoChat(), participantes.get(i), false);
 			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+			
+			cn.commit();
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			
 			System.out.println("ErrorSQL (crearGrupo)");
 		}
 	}
 	
+	// Añade un participante al grupo
 	public void addParticipante(int id_chat, int usuario, boolean admin)
 	{		
 		try
 		{			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("BEGIN; INSERT INTO participa (id_chat, id_usuario, administra) VALUES (?, ?, ?); END;");
-                pst.setInt(1, id_chat);
-                pst.setInt(2, usuario);
-                pst.setBoolean(3, admin);
-				pst.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+			PreparedStatement pst = cn.prepareStatement("INSERT INTO participa (id_chat, id_usuario, administra) VALUES (?, ?, ?);");
+            pst.setInt(1, id_chat);
+            pst.setInt(2, usuario);
+            pst.setBoolean(3, admin);
+			pst.executeUpdate();
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			
 			System.out.println("ErrorSQL (addParticipante)");
 		}		
 	}
 	
+	// Devuelve el id del ultimo chat insertado
 	private int ultimoChat()
 	{
 		try
 		{			
-			if (cn != null)
+			ResultSet rs;
+			int chat = 0;
+			
+			PreparedStatement pst = cn.prepareStatement("SELECT last_value FROM chat_id_chat_seq");
+			rs = pst.executeQuery();
+			
+			while (rs.next())
 			{
-				ResultSet rs;
-				int chat = 0;
-				
-				PreparedStatement pst = cn.prepareStatement("SELECT last_value FROM chat_id_chat_seq");
-				rs = pst.executeQuery();
-				
-				while (rs.next())
-				{
-					chat = rs.getInt("last_value");
-				}
-				
-				return chat;
+				chat = rs.getInt("last_value");
 			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+			
+			return chat;
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			
 			System.out.println("ErrorSQL (ultimoChat)");
 		}
 		
