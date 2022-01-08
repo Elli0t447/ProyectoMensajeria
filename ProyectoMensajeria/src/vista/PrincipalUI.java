@@ -1,33 +1,34 @@
-package interfaz;
+package vista;
+
+import static modelo.Conexion.CerrarConexionBD;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import java.awt.Color;
-import java.awt.Font;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.awt.event.ActionEvent;
-
 import javax.swing.border.MatteBorder;
 
-import aplicacion.AmigosUsuario;
-import aplicacion.ChatsUsuario;
-import aplicacion.Conexion;
-import aplicacion.LoginUsuario;
-import aplicacion.MensajesChat;
-import dialogos.AjustesUsuario;
-
-import javax.swing.SwingConstants;
+import controladorDialogs.AjustesUsuario;
+import controladorMain.AmigosUsuario;
+import controladorMain.ChatsUsuario;
+import controladorMain.LoginUsuario;
+import controladorMain.MensajesChat;
 
 public class PrincipalUI extends JFrame 
 {
@@ -35,10 +36,10 @@ public class PrincipalUI extends JFrame
 	private JPanel contentPane;
 	
 	// Objetos de funcionalidad 
-	public static ChatsUsuario chatsU;
-	public static MensajesChat mensajesC;
-	public static AmigosUsuario amigosU;
-	public static AjustesUsuario ajustesU;
+	private static ChatsUsuario chatsU;
+	private static MensajesChat mensajesC;
+	private static AmigosUsuario amigosU;
+	private static AjustesUsuario ajustesU;
 	
 	// Tabs de interfaz
 	public static JPanel tab_chat;
@@ -242,7 +243,7 @@ public class PrincipalUI extends JFrame
 				
 				/*
 				 * Busca y introduce todos los usuarios en la variable "rs" para comprobar si el cambio de nombre
-				 * no cumple la restricción de integridad 'UNICO NOMBRE'.
+				 * no cumple la restricción de integridad 'UNIQUE NOMBRE'.
 				 * 
 				 * No dejara cambiar el nombre al usuario si ya existe uno así.
 				 * */
@@ -253,19 +254,21 @@ public class PrincipalUI extends JFrame
 				{
 					while(rs.next())
 					{
-						if (!nombreField.getText().equals(rs.getString("nombre")) || nombreField.getText().equals(LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuarioConectado())))
+						if (!nombreField.getText().equals(rs.getString("nombre")) 
+								|| nombreField.getText().equals(LoginUsuario.nombreUserPorId(LoginUsuario.getIdUsuarioConectado())) 
+							    || (!nombreField.getText().isBlank() && !passwordField.getText().isBlank()))
+								
 						{
 							ajustesU.actualizarUsuario(nombreField.getText(), passwordField.getText(), LoginUsuario.getIdUsuarioConectado());
 							usuarioLabelAjustes.setText(nombreField.getText());
+							
 						}
-						else
-						{
-							System.out.println("Error nombre de usuario ya existente!!");
-						}
+						
 					}
-					
-					JOptionPane.showMessageDialog(null, "Usuario actualizado!", "Actualizar", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Usuario actualizado!", "Actualizado", JOptionPane.INFORMATION_MESSAGE);
 					System.out.println("Usuario actualizado!");
+					
+					
 				} 
 				catch (SQLException e1) 
 				{
@@ -407,7 +410,7 @@ public class PrincipalUI extends JFrame
 		{
 			public void actionPerformed(ActionEvent e) 
 			{	
-				if (!escribirTexto.getText().equals(""))
+				if (!escribirTexto.getText().isBlank())
 				{	
 					mensajesC.enviarMensaje(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado(), escribirTexto.getText());
 					mensajesC.cargarChat(ChatsUsuario.getCurrentChat(), PrincipalUI.containerMsj);	
@@ -415,9 +418,22 @@ public class PrincipalUI extends JFrame
 				}
 				else
 				{
-					System.out.println("Escribe algo aunque sea mamoooon");
-				}
+					System.out.println("El mensaje no puede estar vacío");
+				}		
 			}
+		});
+		
+		// Si el texto supera los 80 caracteres, no deja escribir
+		escribirTexto.addKeyListener(new KeyAdapter()
+		{
+			@Override
+            public void keyTyped(KeyEvent e) 
+			{
+                if (escribirTexto.getText().length() >= 80) 
+                {
+                    e.consume();
+                }
+            }
 		});
 		
 		JPanel toolbar = new JPanel();
@@ -439,16 +455,10 @@ public class PrincipalUI extends JFrame
 		salir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				try 
-				{
-					Conexion.Conectar().close();
-					dispose();
-					new LoginUI().setVisible(true);
-				} 
-				catch (SQLException ex) 
-				{
-					ex.printStackTrace();
-				}		
+				// Cierra la conexión y vuelve al login
+				CerrarConexionBD();
+				dispose();
+				new LoginUI().setVisible(true);		
 			}
 		});
 		salir.setBorderPainted(false);
@@ -525,7 +535,7 @@ public class PrincipalUI extends JFrame
 			{
 				container.removeAll();
 				
-				chatsU = new ChatsUsuario(mensajesC);
+				chatsU = new ChatsUsuario();
 				if (chatsU.mostrarListaChats(container))
 				{
 					container.setVisible(true);
@@ -627,9 +637,10 @@ public class PrincipalUI extends JFrame
 		
 	}
 	
+	// Método para mostrar los elementos de la interfaz cuando se inicie
 	private void init()
 	{		
-		chatsU = new ChatsUsuario(mensajesC);
+		chatsU = new ChatsUsuario();
 		if (chatsU.mostrarListaChats(container))
 		{
 			container.setVisible(true);
@@ -640,8 +651,7 @@ public class PrincipalUI extends JFrame
 		{		
 			container.setVisible(true);
 			noChatLabel.setVisible(true);
-			noChatDesc.setVisible(true);
-			
+			noChatDesc.setVisible(true);	
 		}
 				
 		scrollChat.revalidate();

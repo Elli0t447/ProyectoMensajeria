@@ -1,4 +1,6 @@
-package dialogos;
+package controladorDialogs;
+
+import static modelo.Conexion.cn;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,26 +13,19 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import aplicacion.AmigosUsuario;
-import aplicacion.Conexion;
-import aplicacion.LoginUsuario;
+import controladorMain.AmigosUsuario;
+import controladorMain.LoginUsuario;
+
 
 public class CrearGrupo 
-{
-	private static Connection cn;
-	
+{	
 	// Lista con los participantes seleccionados
 	private ArrayList<Integer> participantes = new ArrayList<>();
-	
-	public CrearGrupo()
-	{
-		cn = Conexion.Conectar();
-	}
 	
 	// Llena el contenedor de participantes a añadir, con tus amigos
 	public void rellenarAmigos(JPanel padre)
 	{	
-		try 
+		try
 		{
 			AmigosUsuario amigos = new AmigosUsuario();		
 			ResultSet rsAmigosUserConectado = amigos.amigosUser(LoginUsuario.getIdUsuarioConectado());
@@ -103,7 +98,7 @@ public class CrearGrupo
 			}
 			
 			// Determinar el tamaño del scroll
-			padre.setPreferredSize(new Dimension(200, positionUI));
+			padre.setPreferredSize(new Dimension(0, positionUI));
 			
 			padre.repaint();
 			padre.revalidate();
@@ -136,6 +131,7 @@ public class CrearGrupo
 			}
 			
 			cn.commit();
+			cn.setAutoCommit(true);
 		}
 		catch (SQLException e)
 		{

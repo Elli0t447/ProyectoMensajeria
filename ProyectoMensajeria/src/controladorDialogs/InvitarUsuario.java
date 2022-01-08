@@ -1,29 +1,25 @@
-package dialogos;
+package controladorDialogs;
+
+import static modelo.Conexion.cn;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import aplicacion.ChatsUsuario;
-import aplicacion.Conexion;
-import aplicacion.LoginUsuario;
+import controladorMain.ChatsUsuario;
+import controladorMain.LoginUsuario;
 
 public class InvitarUsuario 
 {
-	private Connection cn;
-	
-	public InvitarUsuario()
-	{
-		cn = Conexion.Conectar();
-	}
-	
 	// Lista de amigos para seleccionar y añadir al grupo
 	public static ArrayList<Integer> amigosList = new ArrayList<>();
 	
@@ -99,7 +95,7 @@ public class InvitarUsuario
 				});
 						
 				// Determinar el tamaño del scroll
-				padre.setPreferredSize(new Dimension(250, positionUI));
+				padre.setPreferredSize(new Dimension(0, positionUI));
 				
 				padre.revalidate();
 				padre.repaint();
@@ -130,7 +126,7 @@ public class InvitarUsuario
 	{
 		ResultSet rs = null;
 		
-		try
+		try 
 	    {   
 			PreparedStatement pst = cn.prepareStatement("SELECT * FROM amistad WHERE ((id_usu1 = ? OR id_usu2 = ?) AND aceptada = true) AND (id_usu1 NOT IN (SELECT id_usuario FROM participa WHERE id_chat = ?) OR id_usu2 NOT IN (SELECT id_usuario FROM participa WHERE id_chat = ?))");
 	        pst.setInt(1, id_u);

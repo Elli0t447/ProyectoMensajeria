@@ -1,4 +1,4 @@
-package interfaz;
+package vista;
 
 import java.awt.BorderLayout;
 
@@ -7,8 +7,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import aplicacion.LoginUsuario;
-import dialogos.AnyadirAmigo;
+import controladorDialogs.AnyadirAmigo;
+import controladorMain.LoginUsuario;
 
 import java.awt.Color;
 import javax.swing.JComboBox;

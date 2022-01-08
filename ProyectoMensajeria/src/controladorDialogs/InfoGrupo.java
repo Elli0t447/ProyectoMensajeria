@@ -1,8 +1,9 @@
-package dialogos;
+package controladorDialogs;
+
+import static modelo.Conexion.cn;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,15 +17,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 
-import aplicacion.ChatsUsuario;
-import aplicacion.Conexion;
-import aplicacion.LoginUsuario;
-import interfaz.InfoGrupoUI;
+import controladorMain.ChatsUsuario;
+import controladorMain.LoginUsuario;
+import vista.InfoGrupoUI;
 
 public class InfoGrupo 
 {
-	private static Connection cn;
-	
 	// Lista de usuarios seleccionados en la lista de la interfaz
 	private static ArrayList<Integer> cambiarAdmins = new ArrayList<>();
 	
@@ -39,7 +37,6 @@ public class InfoGrupo
 	
 	public InfoGrupo(JLabel titulo, JLabel fecha, JLabel desc)
 	{
-		cn = Conexion.Conectar();
 		tituloLabel = titulo;
 		fechaLabel = fecha;
 		descripLabel = desc;
@@ -235,7 +232,7 @@ public class InfoGrupo
 	{
 		ResultSet rs = null;
 		
-		try 
+		try
 		{	
 			PreparedStatement pst = cn.prepareStatement("SELECT * FROM participa WHERE id_chat = ? AND administra = true");
 			pst.setInt(1, id_chat);
@@ -287,7 +284,7 @@ public class InfoGrupo
 	// Borra un chat por completo por id_chat
 	public void salirUltimoEnGrupo(int id_chat)
 	{
-		try
+		try 
 		{		
 			PreparedStatement pst = cn.prepareStatement("DELETE FROM chat WHERE id_chat = ?");
 			pst.setInt(1, id_chat);

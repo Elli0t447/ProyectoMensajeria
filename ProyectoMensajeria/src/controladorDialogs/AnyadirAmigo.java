@@ -1,28 +1,22 @@
-package dialogos;
+package controladorDialogs;
 
-import java.sql.Connection;
+import static modelo.Conexion.cn;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JComboBox;
 
-import aplicacion.Conexion;
-import aplicacion.LoginUsuario;
+import controladorMain.LoginUsuario;
+
 
 public class AnyadirAmigo 
-{
-	private static Connection cn;
-
-	public AnyadirAmigo()
-	{
-		cn = Conexion.Conectar();
-	}
-		
+{		
 	// Enviar una solicitud a un usuario (id_1 sera quien la manda id_2 quien la recibe)
 	public void enviarSolicitud(int id_u, int id_u2)
 	{	
-		try  
+		try
 		{	
 			PreparedStatement pst = cn.prepareStatement("INSERT INTO amistad (id_usu1, id_usu2, aceptada) VALUES (?,?,false)");
 			pst.setInt(1, id_u);
@@ -49,6 +43,7 @@ public class AnyadirAmigo
             pst.executeUpdate();
             
             cn.commit();
+            cn.setAutoCommit(true);
 		}
 		catch (SQLException e)
 		{

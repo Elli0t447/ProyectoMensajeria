@@ -1,4 +1,4 @@
-package interfaz;
+package vista;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -22,7 +22,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.MatteBorder;
 
-import aplicacion.LoginUsuario;
+import controladorMain.LoginUsuario;
 
 public class LoginUI extends JFrame 
 {

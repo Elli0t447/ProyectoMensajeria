@@ -1,13 +1,9 @@
-package interfaz;
+package vista;
 
 import javax.swing.JDialog;
 import java.awt.Color;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
-import dialogos.InfoGrupo;
-import dialogos.InvitarUsuario;
-
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -16,6 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
+
+import controladorDialogs.InfoGrupo;
+import controladorDialogs.InvitarUsuario;
 
 public class InvitarUsuarioUI extends JDialog 
 {

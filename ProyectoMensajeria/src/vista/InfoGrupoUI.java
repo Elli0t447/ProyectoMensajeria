@@ -1,4 +1,4 @@
-package interfaz;
+package vista;
 
 import java.awt.BorderLayout;
 
@@ -6,10 +6,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-
-import aplicacion.ChatsUsuario;
-import aplicacion.LoginUsuario;
-import dialogos.InfoGrupo;
 
 import java.awt.Toolkit;
 import java.awt.Color;
@@ -24,6 +20,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 import javax.swing.border.MatteBorder;
+
+import controladorDialogs.InfoGrupo;
+import controladorMain.ChatsUsuario;
+import controladorMain.LoginUsuario;
 
 public class InfoGrupoUI extends JDialog 
 {
@@ -70,6 +70,7 @@ public class InfoGrupoUI extends JDialog
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
+				ChatsUsuario chatu = new ChatsUsuario();
 				int opcion = JOptionPane.showConfirmDialog(null, "¿Quieres salir del grupo?", "Salir", JOptionPane.YES_NO_OPTION);
 				
 				ResultSet rsParticipantes = InfoGrupo.participantesGrupo(ChatsUsuario.getCurrentChat());
@@ -94,9 +95,13 @@ public class InfoGrupoUI extends JDialog
 						count_admins++;
 					}
 					
+					
+					
 					// Si hay mas de un participante, solo sale del grupo
 					if (opcion == 0 && count_participants > 1)
 					{
+						
+						
 						if (count_admins > 1)
 						{
 							infog.removeParticipante(ChatsUsuario.getCurrentChat(), LoginUsuario.getIdUsuarioConectado());
@@ -104,7 +109,7 @@ public class InfoGrupoUI extends JDialog
 							
 							// Mostrar de nuevo los chats del usuario
 							PrincipalUI.container.removeAll();
-							PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
+							chatu.mostrarListaChats(PrincipalUI.container);
 							PrincipalUI.tab_chat.setVisible(false);
 							PrincipalUI.tab_noChat.setVisible(true);
 						}
@@ -119,7 +124,7 @@ public class InfoGrupoUI extends JDialog
 							
 							// Mostrar de nuevo los chats del usuario
 							PrincipalUI.container.removeAll();
-							PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
+							chatu.mostrarListaChats(PrincipalUI.container);
 							PrincipalUI.tab_chat.setVisible(false);
 							PrincipalUI.tab_noChat.setVisible(true);
 						}					
@@ -133,7 +138,7 @@ public class InfoGrupoUI extends JDialog
 						
 						// Mostrar de nuevo los chats del user
 						PrincipalUI.container.removeAll();
-						PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
+						chatu.mostrarListaChats(PrincipalUI.container);
 						PrincipalUI.tab_chat.setVisible(false);
 						PrincipalUI.tab_noChat.setVisible(true);
 					}			

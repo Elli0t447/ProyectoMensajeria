@@ -1,4 +1,6 @@
-package aplicacion;
+package controladorMain;
+
+import static modelo.Conexion.cn;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,36 +18,26 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 
-import interfaz.InfoGrupoUI;
-import interfaz.PrincipalUI;
+import vista.InfoGrupoUI;
+import vista.PrincipalUI;
 
 public class ChatsUsuario 
-{
-	private static Connection cn;
-	
+{	
 	// El chat en el que actualmente se encuentra el usuario
 	private static int currentIdChat;
-			
-	// El objeto de funcionalidad de mensajes del chat 
-	private MensajesChat mC;
 	
 	public static int getCurrentChat() { return currentIdChat; }
 	public static void setCurrentChat(int id_c) { currentIdChat = id_c; }
 	
-	public ChatsUsuario(MensajesChat mensajes)
-	{
-		mC = mensajes;
-		cn = Conexion.Conectar();
-	}
 	
 	/* Muestra en la interfaz la lista de los chats a los que pertenece el usuario tanto conversaciones como grupos
 	   Devuelve true si hay mas de un chat, false si actualmente no pertences a ninguno*/
 	public boolean mostrarListaChats(JPanel padre)
-	{		
+	{			
 		ResultSet rsConver = conversUser(LoginUsuario.getIdUsuarioConectado());
 		ResultSet rsGrupo = gruposUser(LoginUsuario.getIdUsuarioConectado());
 		
-		try 
+		try
 		{
 			int countChats = 0;
 			
@@ -163,7 +155,7 @@ public class ChatsUsuario
 				nombreChat.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) 
 					{											
-						mC = new MensajesChat();	
+						MensajesChat mC = new MensajesChat();	
 						// Mostrar datos
 						PrincipalUI.nombreChat.setText(nomIndividual);
 						PrincipalUI.currentChatTitulo = nomIndividual;
@@ -188,7 +180,7 @@ public class ChatsUsuario
 			}
 			
 			// Define el tamaño del scroll
-			padre.setPreferredSize(new Dimension(150, positionUI - 8));
+			padre.setPreferredSize(new Dimension(0, positionUI - 8));
 			padre.revalidate();
 			padre.repaint();
 			
@@ -210,7 +202,7 @@ public class ChatsUsuario
 	{	
 		ResultSet rsConvers = null;
 		
-		try 
+		try
 	    {        
 			PreparedStatement pst = cn.prepareStatement("SELECT usuario.id_usuario, nombre, conversacion.id_chat, id_usu1, id_usu2 FROM usuario INNER JOIN conversacion ON usuario.id_usuario = conversacion.id_usu1 OR usuario.id_usuario = conversacion.id_usu2 WHERE usuario.id_usuario = ?");
 	        pst.setInt(1, id_usuario);
@@ -229,11 +221,11 @@ public class ChatsUsuario
 	private static ResultSet gruposUser(int id_usuario)
 	{	
 		ResultSet rs = null;
-		PreparedStatement pst = null;
 		
-		try	
-	    {      
-			pst = cn.prepareStatement("SELECT usuario.id_usuario, participa.id_chat, administra, grupo.nombre, grupo.descripcion FROM usuario INNER JOIN participa USING (id_usuario) INNER JOIN grupo USING (id_chat) WHERE usuario.id_usuario = ?");
+		try
+	    {      	
+			PreparedStatement pst = cn.prepareStatement("SELECT usuario.id_usuario, participa.id_chat, administra, grupo.nombre, grupo.descripcion FROM usuario INNER JOIN participa USING (id_usuario) INNER JOIN grupo USING (id_chat) WHERE usuario.id_usuario = ?");
+
 	        pst.setInt(1, id_usuario);
 	        rs = pst.executeQuery();
 	        
@@ -250,7 +242,7 @@ public class ChatsUsuario
 	private void mostrarOpcionChat(int id_usu)
 	{
 		// Si es un grupo	
-		if (!PrincipalUI.chatsU.isConver(currentIdChat, LoginUsuario.getIdUsuarioConectado()))
+		if (!isConver(currentIdChat, LoginUsuario.getIdUsuarioConectado()))
 		{
 			PrincipalUI.chatOption.removeAll();
 			
@@ -270,13 +262,13 @@ public class ChatsUsuario
 			PrincipalUI.chatOption.add(infoChat);
 		}
 		// Si es una conversacion
-		else if (PrincipalUI.chatsU.isConver(currentIdChat, LoginUsuario.getIdUsuarioConectado()))
+		else if (isConver(currentIdChat, LoginUsuario.getIdUsuarioConectado()))
 		{			
 			Date amigosFecha = null;
-		
-			try 
-			{
-				ResultSet rsAmigos = fechaAmistad(LoginUsuario.getIdUsuarioConectado(), id_usu);
+			ResultSet rsAmigos = fechaAmistad(LoginUsuario.getIdUsuarioConectado(), id_usu);
+			
+			try
+			{				
 				while (rsAmigos.next())
 				{
 					amigosFecha = rsAmigos.getDate("amigodesde");
@@ -303,11 +295,11 @@ public class ChatsUsuario
 	private ResultSet fechaAmistad(int id_u1, int id_u2)
 	{
 		ResultSet rs = null;
-		PreparedStatement pst = null;
-		
-		try 
+				
+		try
 	    {        
-			pst = cn.prepareStatement("SELECT amigodesde FROM amistad WHERE (id_usu1 = ? AND id_usu2 = ?) OR (id_usu1 = ? AND id_usu2 = ?)");
+			PreparedStatement pst = cn.prepareStatement("SELECT amigodesde FROM amistad WHERE (id_usu1 = ? AND id_usu2 = ?) OR (id_usu1 = ? AND id_usu2 = ?)");
+
 	        pst.setInt(1, id_u1);
 	        pst.setInt(2, id_u2);
 	        pst.setInt(3, id_u2);
@@ -323,11 +315,13 @@ public class ChatsUsuario
 	}
 
 	// Se le pasa un id_chat y devuelve true si es una conversacion y false si es un grupo
-	public boolean isConver(int id_c, int id_usu)
+	public static boolean isConver(int id_c, int id_usu)
 	{	
-		try 
+		ResultSet conversaciones = conversUser(id_usu);
+		
+		try
 		{
-			ResultSet conversaciones = conversUser(id_usu);
+			
 			boolean found = false;
 			
 			while (conversaciones.next())

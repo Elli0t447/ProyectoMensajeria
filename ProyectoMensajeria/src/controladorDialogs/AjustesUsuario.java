@@ -1,22 +1,15 @@
-package dialogos;
+package controladorDialogs;
 
-import java.sql.Connection;
+import static modelo.Conexion.cn;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import aplicacion.Conexion;
-import aplicacion.LoginUsuario;
-import interfaz.PrincipalUI;
+import controladorMain.LoginUsuario;
+import vista.PrincipalUI;
 
 public class AjustesUsuario 
 {
-	private Connection cn;
-	
-	public AjustesUsuario()
-	{
-		cn = Conexion.Conectar();
-	}
-	
 	// Rellenar los datos de la pantalla de ajustes
 	public void datosAjustes()
 	{
@@ -34,18 +27,11 @@ public class AjustesUsuario
 		{			
 			pass = LoginUsuario.encriptarContra(pass);
 			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("UPDATE usuario SET nombre = ?, contra = ? WHERE id_usuario = ?");
-				pst.setString(1, nom_usu);
-				pst.setString(2, pass);
-				pst.setInt(3, id_usu);
-                pst.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+			PreparedStatement pst = cn.prepareStatement("UPDATE usuario SET nombre = ?, contra = ? WHERE id_usuario = ?");
+			pst.setString(1, nom_usu);
+			pst.setString(2, pass);
+			pst.setInt(3, id_usu);
+            pst.executeUpdate();
 		}
 		catch (SQLException e)
 		{
@@ -58,16 +44,9 @@ public class AjustesUsuario
 	{	
 		try
 		{			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("DELETE FROM usuario WHERE id_usuario = ?");
-				pst.setInt(1, id_usu);
-	            pst.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+			PreparedStatement pst = cn.prepareStatement("DELETE FROM usuario WHERE id_usuario = ?");
+			pst.setInt(1, id_usu);
+            pst.executeUpdate();
 		}
 		catch (SQLException e)
 		{

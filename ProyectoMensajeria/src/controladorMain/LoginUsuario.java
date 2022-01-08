@@ -1,8 +1,10 @@
-package aplicacion;
+package controladorMain;
+
+import static modelo.Conexion.cn;
+import static modelo.Conexion.ConectarBD;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,8 +18,6 @@ public class LoginUsuario
 	// ID usuario logueado
 	private static int id_usuario;
 	
-	private static Connection cn;
-	
 	public static String getNombreUsuarioConectado() { return usuario; }
 	public static String getContraseñaUsrConectado() { return contraseña; }
 	public static int getIdUsuarioConectado() { return id_usuario; }
@@ -26,7 +26,7 @@ public class LoginUsuario
 	{
 		usuario = user;
 		contraseña = encriptarContra(pass);
-		cn = Conexion.Conectar();
+		ConectarBD();
 	}
 	
 	// Devuelve datos de un usuario por su nombre
@@ -34,7 +34,7 @@ public class LoginUsuario
 	{
 	    ResultSet rs = null;
 
-	    try 
+	    try
 	    {
 	        PreparedStatement pst = cn.prepareStatement("SELECT * FROM usuario WHERE nombre = ?");
 	        pst.setString(1, usuario);
@@ -86,7 +86,7 @@ public class LoginUsuario
 	{
 	    ResultSet rs = null;
 	    String nombreResult = null;
-	    try 
+	    try
 	    {
 	        PreparedStatement pst = cn.prepareStatement("SELECT * FROM usuario WHERE id_usuario = ?");
 	        pst.setInt(1, id_u);
@@ -111,7 +111,8 @@ public class LoginUsuario
 	{
 	    ResultSet rs = null;
 	    int nombreResult = 0;
-	    try 
+	    
+	    try
 	    {
 	        PreparedStatement pst = cn.prepareStatement("SELECT * FROM usuario WHERE nombre = ?");
 	        pst.setString(1, nom_u);
@@ -134,6 +135,7 @@ public class LoginUsuario
 	// Inserta en usuario los datos de los textfield de LoginUI
 	public void nuevaCuenta()
 	{
+		
 		try
 		{			
 			PreparedStatement pst = cn.prepareStatement("INSERT INTO usuario (id_usuario, nombre, contra) VALUES (DEFAULT,?,?)");
@@ -145,6 +147,7 @@ public class LoginUsuario
 		{
 			System.out.println("ErrorSQL (nuevaCuenta)");
 		}
+		
 	}
 	
 	// Devuelve todos los nombres de usuario registrados en la base de datos
@@ -152,7 +155,7 @@ public class LoginUsuario
 	{
 		ResultSet rs = null;
 
-	    try 
+	    try
 	    {
 	        PreparedStatement pst = cn.prepareStatement("SELECT nombre FROM usuario");
 	        rs = pst.executeQuery();
@@ -174,31 +177,24 @@ public class LoginUsuario
 		
 		try
 		{	
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("SELECT * FROM participa WHERE id_usuario = ? AND id_chat = ?");
-				pst.setInt(1, id_usuario);
-				pst.setInt(2, id_chat);
-                rs = pst.executeQuery();
-                
-                while (rs.next())
-                {
-                	admin = rs.getBoolean("administra");
-                }
-                
-                if (admin)
-                {
-                	return true;
-                }
-                else
-                {
-                	return false;
-                }
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+			PreparedStatement pst = cn.prepareStatement("SELECT * FROM participa WHERE id_usuario = ? AND id_chat = ?");
+			pst.setInt(1, id_usuario);
+			pst.setInt(2, id_chat);
+            rs = pst.executeQuery();
+            
+            while (rs.next())
+            {
+            	admin = rs.getBoolean("administra");
+            }
+            
+            if (admin)
+            {
+            	return true;
+            }
+            else
+            {
+            	return false;
+            }
 		}
 		catch (SQLException e)
 		{

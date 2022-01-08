@@ -1,4 +1,4 @@
-package aplicacion;
+package controladorMain;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -6,8 +6,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import dialogos.AnyadirAmigo;
-import interfaz.PrincipalUI;
+import controladorDialogs.AnyadirAmigo;
+import vista.PrincipalUI;
+
+import static modelo.Conexion.cn;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,21 +19,12 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class AmigosUsuario 
-{
-	private static Connection cn;
-	
-	// Objeto instanciado en PrincipalUI
-	private static AmigosUsuario au;
-	
-	public AmigosUsuario()
-	{
-		cn = Conexion.Conectar();
-	}
+{	
 	
 	// Muestra la lista de amigos en el contenedor pasado por parametro, devuelve true si tienes mas de un amigo y false si no tienes (para mostrar un mensaje)
 	public boolean mostrarListaAmigos(JPanel padre)
 	{				
-		try 
+		try
 		{
 			ResultSet rsA = amigosUser(LoginUsuario.getIdUsuarioConectado());
 			
@@ -81,11 +74,10 @@ public class AmigosUsuario
 						
 						if (opcion == 0)
 						{
-							au = PrincipalUI.amigosU;
 							borrarAmigo(LoginUsuario.getIdUsuarioConectado(), usuarioFinal);
 							
 							PrincipalUI.amigoContainer.removeAll();
-			                if(au.mostrarListaAmigos(PrincipalUI.amigoContainer) == false)
+			                if(mostrarListaAmigos(PrincipalUI.amigoContainer) == false)
 			                {
 			                	PrincipalUI.descAmigo.setVisible(true);
 			                }
@@ -102,7 +94,7 @@ public class AmigosUsuario
 				});
 				panelAmigo.add(borrarAmigo);
 						
-				padre.setPreferredSize(new Dimension(250, positionUI));
+				padre.setPreferredSize(new Dimension(0, positionUI));
 				padre.revalidate();
 				padre.repaint();
 				countAmigos++;
@@ -167,15 +159,12 @@ public class AmigosUsuario
 				denegarPeticion.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) 
 					{		
-						// Instancia de la interfaz PrincipalUI
-						au = PrincipalUI.amigosU;
-						
 						// Borra la amistad entre los dos usuarios
 						borrarAmigo(LoginUsuario.getIdUsuarioConectado(), usuarioFinal);
 						
 						// Recarga la interfaz
 						PrincipalUI.peticionesContainer.removeAll();
-						if(au.mostrarListaPeticiones(PrincipalUI.peticionesContainer) == false)
+						if(mostrarListaPeticiones(PrincipalUI.peticionesContainer) == false)
 						{
 							PrincipalUI.descPeti.setVisible(true);
 						}
@@ -195,13 +184,11 @@ public class AmigosUsuario
 					public void actionPerformed(ActionEvent e) 
 					{		
 						AnyadirAmigo add = new AnyadirAmigo();
-						
-						// Instancia de la interfaz principal 
-						au = PrincipalUI.amigosU;
+						ChatsUsuario chatu = new ChatsUsuario();
 						
 						// Acepta la amistad entre los dos usuarios
 						aceptarAmistad(LoginUsuario.getIdUsuarioConectado(), usuarioFinal);
-						PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
+						chatu.mostrarListaChats(PrincipalUI.container);
 						
 						// Inserta el chat al aceptar la amistad
 						add.insertarChat(LoginUsuario.getIdUsuarioConectado(), usuarioFinal);
@@ -210,11 +197,11 @@ public class AmigosUsuario
 						// Recargar la interfaz
 						PrincipalUI.peticionesContainer.removeAll();
 						PrincipalUI.amigoContainer.removeAll();
-		                if(au.mostrarListaPeticiones(PrincipalUI.peticionesContainer) == false)
+		                if(mostrarListaPeticiones(PrincipalUI.peticionesContainer) == false)
 		                {
 		                	PrincipalUI.descPeti.setVisible(true);
 		                }
-		                if(au.mostrarListaAmigos(PrincipalUI.amigoContainer) == false)
+		                if(mostrarListaAmigos(PrincipalUI.amigoContainer) == false)
 		                {
 		                	PrincipalUI.descAmigo.setVisible(true);
 		                }
@@ -226,7 +213,7 @@ public class AmigosUsuario
 				panelPeticion.add(aceptarPeticion);
 						
 				// Determina el tamaño del scroll
-				padre.setPreferredSize(new Dimension(padre.getWidth(), positionUI));
+				padre.setPreferredSize(new Dimension(0, positionUI));
 				
 				padre.revalidate();
 				padre.repaint();
@@ -250,9 +237,9 @@ public class AmigosUsuario
 	{
 		ResultSet rs = null;
 		
-		try 
+		try
 	    {
-	        PreparedStatement pst = cn.prepareStatement("SELECT * FROM amistad WHERE (id_usu1 = ? OR id_usu2 = ?) AND aceptada = true");
+			PreparedStatement pst = cn.prepareStatement("SELECT * FROM amistad WHERE (id_usu1 = ? OR id_usu2 = ?) AND aceptada = true");
 	        pst.setInt(1, id_u);
 	        pst.setInt(2, id_u);
 	        rs = pst.executeQuery();
@@ -271,9 +258,9 @@ public class AmigosUsuario
 	{
 		ResultSet rs = null;
 		
-		try 
+		try
 	    {
-	        PreparedStatement pst = cn.prepareStatement("SELECT * FROM amistad WHERE id_usu2 = ? AND aceptada = false");
+			PreparedStatement pst = cn.prepareStatement("SELECT * FROM amistad WHERE id_usu2 = ? AND aceptada = false");
 	        pst.setInt(1, id_u);
 	        rs = pst.executeQuery();
 	        
@@ -290,20 +277,13 @@ public class AmigosUsuario
 	private void aceptarAmistad(int id_u1, int id_u2)
 	{
 		try
-		{			
-			if (cn != null)
-			{
-				PreparedStatement pst = cn.prepareStatement("UPDATE amistad SET aceptada = 'true', amigodesde = now() WHERE (id_usu1 = ? AND id_usu2 = ?) OR (id_usu1 = ? AND id_usu2 = ?)");
-				pst.setInt(1, id_u1);
-				pst.setInt(2, id_u2);
-				pst.setInt(3, id_u2);
-				pst.setInt(4, id_u1);
-                pst.executeUpdate();             
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+		{		
+			PreparedStatement pst = cn.prepareStatement("UPDATE amistad SET aceptada = 'true', amigodesde = now() WHERE (id_usu1 = ? AND id_usu2 = ?) OR (id_usu1 = ? AND id_usu2 = ?)");
+			pst.setInt(1, id_u1);
+			pst.setInt(2, id_u2);
+			pst.setInt(3, id_u2);
+			pst.setInt(4, id_u1);
+            pst.executeUpdate(); 
 		}
 		catch (SQLException e)
 		{
@@ -314,41 +294,38 @@ public class AmigosUsuario
 	// Borra la amistad entre dos usuarios, por lo tanto si tienen una conversacion tambien la borra
 	private void borrarAmigo(int id_u1, int id_u2)
 	{
-		try
+		try 	
 		{			
-			if (cn != null)
-			{
-				ResultSet rs = null;
-				int id_chat = 0;
+			ResultSet rs = null;
+			int id_chat = 0;
+			
+			// Borra la amistad entre los dos usuarios
+			PreparedStatement deleteAmistad = cn.prepareStatement("DELETE FROM amistad WHERE (id_usu1 = ? AND id_usu2 = ?) OR (id_usu1 = ? AND id_usu2 = ?)");
+
+			deleteAmistad.setInt(1, id_u1);
+			deleteAmistad.setInt(2, id_u2);
+			deleteAmistad.setInt(3, id_u2);
+			deleteAmistad.setInt(4, id_u1);
+            deleteAmistad.executeUpdate();    
 				
-				PreparedStatement deleteAmistad = cn.prepareStatement("DELETE FROM amistad WHERE (id_usu1 = ? AND id_usu2 = ?) OR (id_usu1 = ? AND id_usu2 = ?)");
-				deleteAmistad.setInt(1, id_u1);
-				deleteAmistad.setInt(2, id_u2);
-				deleteAmistad.setInt(3, id_u2);
-				deleteAmistad.setInt(4, id_u1);
-                deleteAmistad.executeUpdate();    
-				
-				PreparedStatement pst = cn.prepareStatement("SELECT * FROM conversacion WHERE (id_usu1 = ? AND id_usu2 = ?) OR (id_usu1 = ? AND id_usu2 = ?)");
-				pst.setInt(1, id_u1);
-				pst.setInt(2, id_u2);
-				pst.setInt(3, id_u2);
-				pst.setInt(4, id_u1);
-                rs = pst.executeQuery();         
-                
-                // Encuentra el chat para borrarlo
-                while (rs.next())
-                {
-                	id_chat = rs.getInt("id_chat");            	          	
-                }
-                
-                PreparedStatement borrar = cn.prepareStatement("DELETE FROM chat WHERE id_chat = ?");
-            	borrar.setInt(1, id_chat);
-            	borrar.executeUpdate();
-			}
-			else
-			{
-				System.out.println("Conexión nula.");
-			}
+            // Busca la conversación entre los dos usuarios
+            PreparedStatement conv = cn.prepareStatement("SELECT * FROM conversacion WHERE (id_usu1 = ? AND id_usu2 = ?) OR (id_usu1 = ? AND id_usu2 = ?)");
+			conv.setInt(1, id_u1);
+			conv.setInt(2, id_u2);
+			conv.setInt(3, id_u2);
+			conv.setInt(4, id_u1);
+            rs = conv.executeQuery();         
+            
+            // Saca el id_chat para borrarlo
+            while (rs.next())
+            {
+            	id_chat = rs.getInt("id_chat");            	          	
+            }           
+            
+            // Borra el chat de los dos usuarios
+            PreparedStatement borrar = cn.prepareStatement("DELETE FROM chat WHERE id_chat = ?");
+        	borrar.setInt(1, id_chat);
+        	borrar.executeUpdate();
 		}
 		catch (SQLException e)
 		{

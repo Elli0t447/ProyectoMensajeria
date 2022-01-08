@@ -1,4 +1,4 @@
-package interfaz;
+package vista;
 
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
@@ -10,6 +10,8 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
@@ -17,7 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 
-import dialogos.CrearGrupo;
+import controladorDialogs.CrearGrupo;
+import controladorMain.ChatsUsuario;
 
 
 public class CrearGrupoUI extends JDialog 
@@ -112,12 +115,20 @@ public class CrearGrupoUI extends JDialog
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
-				newGrp.crearGrupo(nombreGrupo.getText(), descripcionGrupo.getText());
-				dispose();
-				
-				// Mostrar de nuevo los chats del usuario
-				PrincipalUI.container.removeAll();
-				PrincipalUI.chatsU.mostrarListaChats(PrincipalUI.container);
+				if (!nombreGrupo.getText().isBlank())
+				{			
+					newGrp.crearGrupo(nombreGrupo.getText(), descripcionGrupo.getText());
+					dispose();
+					
+					// Mostrar de nuevo los chats del usuario
+					PrincipalUI.container.removeAll();
+					ChatsUsuario chatu = new ChatsUsuario();
+					chatu.mostrarListaChats(PrincipalUI.container);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "El grupo tiene que tener un nombre", "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		crearGrupoBtn.setBorderPainted(false);
